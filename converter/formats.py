@@ -1,4 +1,22 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+format_list = list()
+
+
+class MetaBaseFormat(type):
+
+    def __new__(mcl, name, bases, dct):
+        sub_class = type.__new__(mcl, name, bases, dct)
+        if hasattr(mcl, "base_class"):
+            for base in bases:
+                if base in format_list and not base.format_name:
+                    format_list.remove(base)
+            if sub_class not in format_list:
+                format_list.append(sub_class)
+        else:
+            mcl.base_class = sub_class
+        return sub_class
 
 
 class BaseFormat(object):
@@ -7,6 +25,8 @@ class BaseFormat(object):
 
     Supported formats are: ogg, avi, mkv, webm, flv, mov, mp4, mpeg
     """
+
+    __metaclass__ = MetaBaseFormat
 
     format_name = None
     ffmpeg_format_name = None
@@ -90,9 +110,3 @@ class Mp3Format(BaseFormat):
     """
     format_name = 'mp3'
     ffmpeg_format_name = 'mp3'
-
-
-format_list = [
-    OggFormat, AviFormat, MkvFormat, WebmFormat, FlvFormat,
-    MovFormat, Mp4Format, MpegFormat, Mp3Format
-]
