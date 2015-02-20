@@ -16,7 +16,16 @@ Container formats
 Audio and video codecs
 ----------------------
 
-.. automodule:: converter.avcodecs
+.. automodule:: converter.codecs
+    :members:
+
+.. automodule:: converter.codecs.audio
+    :members:
+
+.. automodule:: converter.codecs.subtitle
+    :members:
+
+.. automodule:: converter.codecs.video
     :members:
 
 Low-level ffmpeg wrapper

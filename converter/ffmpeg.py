@@ -200,7 +200,6 @@ class MediaStreamInfo(object):
             if key == 'disposition:default':
                 self.sub_default = self.parse_int(val)
 
-
     def __repr__(self):
         d = ''
         metadata_str = ['%s=%s' % (key, value) for key, value

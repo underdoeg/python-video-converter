@@ -1,140 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-
-class BaseCodec(object):
-    """
-    Base audio/video codec class.
-    """
-
-    encoder_options = {}
-    codec_name = None
-    ffmpeg_codec_name = None
-
-    def parse_options(self, opt):
-        if 'codec' not in opt or opt['codec'] != self.codec_name:
-            raise ValueError('invalid codec name')
-        return None
-
-    def _codec_specific_parse_options(self, safe):
-        return safe
-
-    def _codec_specific_produce_ffmpeg_list(self, safe):
-        return []
-
-    def safe_options(self, opts):
-        safe = {}
-
-        # Only copy options that are expected and of correct type
-        # (and do typecasting on them)
-        for k, v in opts.items():
-            if k in self.encoder_options:
-                typ = self.encoder_options[k]
-                try:
-                    safe[k] = typ(v)
-                except:
-                    pass
-
-        return safe
-
-
-class AudioCodec(BaseCodec):
-    """
-    Base audio codec class handles general audio options. Possible
-    parameters are:
-      * codec (string) - audio codec name
-      * channels (integer) - number of audio channels
-      * bitrate (integer) - stream bitrate
-      * samplerate (integer) - sample rate (frequency)
-
-    Supported audio codecs are: null (no audio), copy (copy from
-    original), vorbis, aac, mp3, mp2
-    """
-
-    encoder_options = {
-        'codec': str,
-        'channels': int,
-        'bitrate': int,
-        'samplerate': int
-    }
-
-    def parse_options(self, opt):
-        super(AudioCodec, self).parse_options(opt)
-
-        safe = self.safe_options(opt)
-
-        if 'channels' in safe:
-            c = safe['channels']
-            if c < 1 or c > 12:
-                del safe['channels']
-
-        if 'bitrate' in safe:
-            br = safe['bitrate']
-            if br < 8 or br > 512:
-                del safe['bitrate']
-
-        if 'samplerate' in safe:
-            f = safe['samplerate']
-            if f < 1000 or f > 50000:
-                del safe['samplerate']
-
-        safe = self._codec_specific_parse_options(safe)
-
-        optlist = ['-acodec', self.ffmpeg_codec_name]
-        if 'channels' in safe:
-            optlist.extend(['-ac', str(safe['channels'])])
-        if 'bitrate' in safe:
-            optlist.extend(['-ab', str(safe['bitrate']) + 'k'])
-        if 'samplerate' in safe:
-            optlist.extend(['-ar', str(safe['samplerate'])])
-
-        optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
-        return optlist
-
-
-class SubtitleCodec(BaseCodec):
-    """
-    Base subtitle codec class handles general subtitle options. Possible
-    parameters are:
-      * codec (string) - subtitle codec name (mov_text, subrib, ssa only supported currently)
-      * language (string) - language of subtitle stream (3 char code)
-      * forced (int) - force subtitles (1 true, 0 false)
-      * default (int) - default subtitles (1 true, 0 false)
-
-    Supported subtitle codecs are: null (no subtitle), mov_text
-    """
-
-    encoder_options = {
-        'codec': str,
-        'language': str,
-        'forced': int,
-        'default': int
-    }
-
-    def parse_options(self, opt):
-        super(SubtitleCodec, self).parse_options(opt)
-        safe = self.safe_options(opt)
-
-        if 'forced' in safe:
-            f = safe['forced']
-            if f < 0 or f > 1:
-                del safe['forced']
-
-        if 'default' in safe:
-            d = safe['default']
-            if d < 0 or d > 1:
-                del safe['default']
-
-        if 'language' in safe:
-            l = safe['language']
-            if len(l) > 3:
-                del safe['language']
-
-        safe = self._codec_specific_parse_options(safe)
-
-        optlist = ['-scodec', self.ffmpeg_codec_name]
-
-        optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
-        return optlist
+from . import BaseCodec
 
 
 class VideoCodec(BaseCodec):
@@ -166,6 +33,7 @@ class VideoCodec(BaseCodec):
     MPEG-1, MPEG-2.
     """
 
+    codec_type = "video"
     encoder_options = {
         'codec': str,
         'bitrate': int,
@@ -312,17 +180,7 @@ class VideoCodec(BaseCodec):
         return optlist
 
 
-class AudioNullCodec(BaseCodec):
-    """
-    Null audio codec (no audio).
-    """
-    codec_name = None
-
-    def parse_options(self, opt):
-        return ['-an']
-
-
-class VideoNullCodec(BaseCodec):
+class VideoNullCodec(VideoCodec):
     """
     Null video codec (no video).
     """
@@ -333,28 +191,7 @@ class VideoNullCodec(BaseCodec):
         return ['-vn']
 
 
-class SubtitleNullCodec(BaseCodec):
-    """
-    Null video codec (no video).
-    """
-
-    codec_name = None
-
-    def parse_options(self, opt):
-        return ['-sn']
-
-
-class AudioCopyCodec(BaseCodec):
-    """
-    Copy audio stream directly from the source.
-    """
-    codec_name = 'copy'
-
-    def parse_options(self, opt):
-        return ['-acodec', 'copy']
-
-
-class VideoCopyCodec(BaseCodec):
+class VideoCopyCodec(VideoCodec):
     """
     Copy video stream directly from the source.
     """
@@ -364,97 +201,6 @@ class VideoCopyCodec(BaseCodec):
         return ['-vcodec', 'copy']
 
 
-class SubtitleCopyCodec(BaseCodec):
-    """
-    Copy subtitle stream directly from the source.
-    """
-    codec_name = 'copy'
-
-    def parse_options(self, opt):
-        return ['-scodec', 'copy']
-
-# Audio Codecs
-class VorbisCodec(AudioCodec):
-    """
-    Vorbis audio codec.
-    @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
-    """
-    codec_name = 'vorbis'
-    ffmpeg_codec_name = 'libvorbis'
-    encoder_options = AudioCodec.encoder_options.copy()
-    encoder_options.update({
-        'quality': int,  # audio quality. Range is 0-10(highest quality)
-        # 3-6 is a good range to try. Default is 3
-    })
-
-    def _codec_specific_produce_ffmpeg_list(self, safe):
-        optlist = []
-        if 'quality' in safe:
-            optlist.extend(['-qscale:a', safe['quality']])
-        return optlist
-
-
-class AacCodec(AudioCodec):
-    """
-    AAC audio codec.
-    """
-    codec_name = 'aac'
-    ffmpeg_codec_name = 'aac'
-    aac_experimental_enable = ['-strict', 'experimental']
-
-    def _codec_specific_produce_ffmpeg_list(self, safe):
-        return self.aac_experimental_enable
-
-
-class FdkAacCodec(AudioCodec):
-    """
-    AAC audio codec.
-    """
-    codec_name = 'libfdk_aac'
-    ffmpeg_codec_name = 'libfdk_aac'
-
-
-class Ac3Codec(AudioCodec):
-    """
-    AC3 audio codec.
-    """
-    codec_name = 'ac3'
-    ffmpeg_codec_name = 'ac3'
-
-
-class FlacCodec(AudioCodec):
-    """
-    FLAC audio codec.
-    """
-    codec_name = 'flac'
-    ffmpeg_codec_name = 'flac'
-
-
-class DtsCodec(AudioCodec):
-    """
-    DTS audio codec.
-    """
-    codec_name = 'dts'
-    ffmpeg_codec_name = 'dts'
-
-
-class Mp3Codec(AudioCodec):
-    """
-    MP3 (MPEG layer 3) audio codec.
-    """
-    codec_name = 'mp3'
-    ffmpeg_codec_name = 'libmp3lame'
-
-
-class Mp2Codec(AudioCodec):
-    """
-    MP2 (MPEG layer 2) audio codec.
-    """
-    codec_name = 'mp2'
-    ffmpeg_codec_name = 'mp2'
-
-
-# Video Codecs
 class TheoraCodec(VideoCodec):
     """
     Theora video codec.
@@ -577,61 +323,3 @@ class Mpeg2Codec(MpegCodec):
     """
     codec_name = 'mpeg2'
     ffmpeg_codec_name = 'mpeg2video'
-
-
-# Subtitle Codecs
-class MOVTextCodec(SubtitleCodec):
-    """
-    mov_text subtitle codec.
-    """
-    codec_name = 'mov_text'
-    ffmpeg_codec_name = 'mov_text'
-
-
-class SSA(SubtitleCodec):
-    """
-    SSA (SubStation Alpha) subtitle.
-    """
-    codec_name = 'ass'
-    ffmpeg_codec_name = 'ass'
-
-
-class SubRip(SubtitleCodec):
-    """
-    SubRip subtitle.
-    """
-    codec_name = 'subrip'
-    ffmpeg_codec_name = 'subrip'
-
-
-class DVBSub(SubtitleCodec):
-    """
-    DVB subtitles.
-    """
-    codec_name = 'dvbsub'
-    ffmpeg_codec_name = 'dvbsub'
-
-
-class DVDSub(SubtitleCodec):
-    """
-    DVD subtitles.
-    """
-    codec_name = 'dvdsub'
-    ffmpeg_codec_name = 'dvdsub'
-
-
-audio_codec_list = [
-    AudioNullCodec, AudioCopyCodec, VorbisCodec, AacCodec, Mp3Codec, Mp2Codec,
-    FdkAacCodec, Ac3Codec, DtsCodec, FlacCodec
-]
-
-video_codec_list = [
-    VideoNullCodec, VideoCopyCodec, TheoraCodec, H264Codec,
-    DivxCodec, Vp8Codec, H263Codec, FlvCodec, Mpeg1Codec,
-    Mpeg2Codec
-]
-
-subtitle_codec_list = [
-    SubtitleNullCodec, SubtitleCopyCodec, MOVTextCodec, SSA, SubRip, DVDSub,
-    DVBSub
-]

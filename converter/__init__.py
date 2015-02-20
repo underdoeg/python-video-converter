@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
 import os
-
-from converter.avcodecs import video_codec_list, audio_codec_list, subtitle_codec_list
+from converter.codecs import codec_lists
 from converter.formats import format_list
 from converter.ffmpeg import FFMpeg, FFMpegError, FFMpegConvertError
 
@@ -23,22 +22,21 @@ class Converter(object):
         Initialize a new Converter object.
         """
 
-        self.ffmpeg = FFMpeg(ffmpeg_path=ffmpeg_path,
-                             ffprobe_path=ffprobe_path)
+        self.ffmpeg = FFMpeg(ffmpeg_path=ffmpeg_path, ffprobe_path=ffprobe_path)
         self.video_codecs = {}
         self.audio_codecs = {}
         self.subtitle_codecs = {}
         self.formats = {}
 
-        for cls in audio_codec_list:
+        for cls in codec_lists["audio"]:
             name = cls.codec_name
             self.audio_codecs[name] = cls
 
-        for cls in video_codec_list:
+        for cls in codec_lists["video"]:
             name = cls.codec_name
             self.video_codecs[name] = cls
 
-        for cls in subtitle_codec_list:
+        for cls in codec_lists["subtitle"]:
             name = cls.codec_name
             self.subtitle_codecs[name] = cls
 
@@ -121,7 +119,6 @@ class Converter(object):
             else:
                 format_options.extend(['-map', str(m)])
 
-
         # aggregate all options
         optlist = audio_options + video_options + subtitle_options + format_options
 
@@ -142,9 +139,9 @@ class Converter(object):
             * format (mandatory, string) - container format; see
               formats.BaseFormat for list of supported formats
             * audio (optional, dict) - audio codec and options; see
-              avcodecs.AudioCodec for list of supported options
+              codecs.audio.AudioCodec for list of supported options
             * video (optional, dict) - video codec and options; see
-              avcodecs.VideoCodec for list of supported options
+              codecs.video.VideoCodec for list of supported options
             * map (optional, int) - can be used to map all content of stream 0
 
         Multiple audio/video streams are not supported. The output has to

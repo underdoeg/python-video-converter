@@ -12,7 +12,7 @@ import unittest
 import os
 from os.path import join as pjoin
 
-from converter import ffmpeg, formats, avcodecs, Converter, ConverterError
+from converter import ffmpeg, formats, codecs, Converter, ConverterError
 
 
 def verify_progress(p):
@@ -197,15 +197,15 @@ class TestFFMpeg(unittest.TestCase):
         self.assertRaisesSpecific(ValueError, c.parse_options, {})
         self.assertEqual(['-f', 'ogg'], formats.OggFormat().parse_options({'format': 'ogg'}))
 
-    def test_avcodecs(self):
-        c = avcodecs.BaseCodec()
+    def test_codecs(self):
+        c = codecs.BaseCodec()
         self.assertRaisesSpecific(ValueError, c.parse_options, {})
 
         c.encoder_options = {'foo': int, 'bar': bool}
         self.assertEqual({}, c.safe_options({'baz': 1, 'quux': 1, 'foo': 'w00t'}))
         self.assertEqual({'foo': 42, 'bar': False}, c.safe_options({'foo': '42', 'bar': 0}))
 
-        c = avcodecs.AudioCodec()
+        c = codecs.AudioCodec()
         c.codec_name = 'doctest'
         c.ffmpeg_codec_name = 'doctest'
 
@@ -215,7 +215,7 @@ class TestFFMpeg(unittest.TestCase):
         self.assertEqual(['-acodec', 'doctest', '-ac', '1', '-ab', '64k', '-ar', '44100'],
                          c.parse_options({'codec': 'doctest', 'channels': '1', 'bitrate': '64', 'samplerate': '44100'}))
 
-        c = avcodecs.VideoCodec()
+        c = codecs.VideoCodec()
         c.codec_name = 'doctest'
         c.ffmpeg_codec_name = 'doctest'
 
