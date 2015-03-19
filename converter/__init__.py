@@ -11,6 +11,7 @@ class ConverterError(Exception):
 
 
 class Converter(object):
+
     """
     Converter class, encapsulates formats and codecs.
 
@@ -22,7 +23,8 @@ class Converter(object):
         Initialize a new Converter object.
         """
 
-        self.ffmpeg = FFMpeg(ffmpeg_path=ffmpeg_path, ffprobe_path=ffprobe_path)
+        self.ffmpeg = FFMpeg(
+            ffmpeg_path=ffmpeg_path, ffprobe_path=ffprobe_path)
         self.video_codecs = {}
         self.audio_codecs = {}
         self.subtitle_codecs = {}
@@ -108,7 +110,8 @@ class Converter(object):
         if c not in self.subtitle_codecs:
             raise ConverterError('Requested unknown subtitle codec ' + str(c))
 
-        subtitle_options = self.subtitle_codecs[c]().parse_options(opt_subtitle)
+        subtitle_options = self.subtitle_codecs[
+            c]().parse_options(opt_subtitle)
         if subtitle_options is None:
             raise ConverterError('Unknown subtitle codec error')
 
@@ -120,7 +123,8 @@ class Converter(object):
                 format_options.extend(['-map', str(m)])
 
         # aggregate all options
-        optlist = audio_options + video_options + subtitle_options + format_options
+        optlist = audio_options + video_options + subtitle_options + \
+            format_options
 
         if twopass == 1:
             optlist.extend(['-pass', '1'])

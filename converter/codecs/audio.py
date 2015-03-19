@@ -5,6 +5,7 @@ from . import BaseCodec
 
 
 class AudioCodec(BaseCodec):
+
     """
     Base audio codec class handles general audio options. Possible
     parameters are:
@@ -59,6 +60,7 @@ class AudioCodec(BaseCodec):
 
 
 class AudioNullCodec(AudioCodec):
+
     """
     Null audio codec (no audio).
     """
@@ -69,6 +71,7 @@ class AudioNullCodec(AudioCodec):
 
 
 class AudioCopyCodec(AudioCodec):
+
     """
     Copy audio stream directly from the source.
     """
@@ -79,6 +82,7 @@ class AudioCopyCodec(AudioCodec):
 
 
 class VorbisCodec(AudioCodec):
+
     """
     Vorbis audio codec.
     @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
@@ -99,6 +103,7 @@ class VorbisCodec(AudioCodec):
 
 
 class AacCodec(AudioCodec):
+
     """
     AAC audio codec.
     """
@@ -111,6 +116,7 @@ class AacCodec(AudioCodec):
 
 
 class FdkAacCodec(AudioCodec):
+
     """
     AAC audio codec.
     """
@@ -119,6 +125,7 @@ class FdkAacCodec(AudioCodec):
 
 
 class Ac3Codec(AudioCodec):
+
     """
     AC3 audio codec.
     """
@@ -127,6 +134,7 @@ class Ac3Codec(AudioCodec):
 
 
 class FlacCodec(AudioCodec):
+
     """
     FLAC audio codec.
     """
@@ -135,6 +143,7 @@ class FlacCodec(AudioCodec):
 
 
 class DtsCodec(AudioCodec):
+
     """
     DTS audio codec.
     """
@@ -143,6 +152,7 @@ class DtsCodec(AudioCodec):
 
 
 class Mp3Codec(AudioCodec):
+
     """
     MP3 (MPEG layer 3) audio codec.
     """
@@ -151,6 +161,7 @@ class Mp3Codec(AudioCodec):
 
 
 class Mp2Codec(AudioCodec):
+
     """
     MP2 (MPEG layer 2) audio codec.
     """
@@ -159,6 +170,7 @@ class Mp2Codec(AudioCodec):
 
 
 class WmaCodec(AudioCodec):
+
     """
     WMA audio codec.
     """

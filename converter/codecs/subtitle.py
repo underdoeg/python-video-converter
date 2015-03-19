@@ -5,6 +5,7 @@ from . import BaseCodec
 
 
 class SubtitleCodec(BaseCodec):
+
     """
     Base subtitle codec class handles general subtitle options. Possible
     parameters are:
@@ -52,6 +53,7 @@ class SubtitleCodec(BaseCodec):
 
 
 class SubtitleNullCodec(SubtitleCodec):
+
     """
     Null video codec (no video).
     """
@@ -63,6 +65,7 @@ class SubtitleNullCodec(SubtitleCodec):
 
 
 class SubtitleCopyCodec(SubtitleCodec):
+
     """
     Copy subtitle stream directly from the source.
     """
@@ -73,6 +76,7 @@ class SubtitleCopyCodec(SubtitleCodec):
 
 
 class MOVTextCodec(SubtitleCodec):
+
     """
     mov_text subtitle codec.
     """
@@ -81,6 +85,7 @@ class MOVTextCodec(SubtitleCodec):
 
 
 class SSA(SubtitleCodec):
+
     """
     SSA (SubStation Alpha) subtitle.
     """
@@ -89,6 +94,7 @@ class SSA(SubtitleCodec):
 
 
 class SubRip(SubtitleCodec):
+
     """
     SubRip subtitle.
     """
@@ -97,6 +103,7 @@ class SubRip(SubtitleCodec):
 
 
 class DVBSub(SubtitleCodec):
+
     """
     DVB subtitles.
     """
@@ -105,6 +112,7 @@ class DVBSub(SubtitleCodec):
 
 
 class DVDSub(SubtitleCodec):
+
     """
     DVD subtitles.
     """

@@ -10,7 +10,8 @@ class MetaBaseCodec(type):
         sub_class = type.__new__(mcl, name, bases, dct)
         if hasattr(mcl, "base_class"):
             if mcl.base_class not in bases:
-                codec_list = codec_lists.setdefault(sub_class.codec_type, list())
+                codec_list = codec_lists.setdefault(
+                    sub_class.codec_type, list())
                 for base in bases:
                     if base in codec_list and not base.codec_name:
                         codec_list.remove(base)
@@ -22,6 +23,7 @@ class MetaBaseCodec(type):
 
 
 class BaseCodec(object):
+
     """
     Base audio/video codec class.
     """

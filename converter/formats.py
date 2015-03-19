@@ -20,6 +20,7 @@ class MetaBaseFormat(type):
 
 
 class BaseFormat(object):
+
     """
     Base format class.
 
@@ -38,6 +39,7 @@ class BaseFormat(object):
 
 
 class OggFormat(BaseFormat):
+
     """
     Ogg container format, mostly used with Vorbis and Theora.
     """
@@ -46,6 +48,7 @@ class OggFormat(BaseFormat):
 
 
 class AviFormat(BaseFormat):
+
     """
     Avi container format, often used vith DivX video.
     """
@@ -54,6 +57,7 @@ class AviFormat(BaseFormat):
 
 
 class MkvFormat(BaseFormat):
+
     """
     Matroska format, often used with H.264 video.
     """
@@ -62,6 +66,7 @@ class MkvFormat(BaseFormat):
 
 
 class WebmFormat(BaseFormat):
+
     """
     WebM is Google's variant of Matroska containing only
     VP8 for video and Vorbis for audio content.
@@ -71,6 +76,7 @@ class WebmFormat(BaseFormat):
 
 
 class FlvFormat(BaseFormat):
+
     """
     Flash Video container format.
     """
@@ -79,6 +85,7 @@ class FlvFormat(BaseFormat):
 
 
 class MovFormat(BaseFormat):
+
     """
     Mov container format, used mostly with H.264 video
     content, often for mobile platforms.
@@ -88,6 +95,7 @@ class MovFormat(BaseFormat):
 
 
 class Mp4Format(BaseFormat):
+
     """
     Mp4 container format, the default Format for H.264 video content.
     """
@@ -96,6 +104,7 @@ class Mp4Format(BaseFormat):
 
 
 class MpegFormat(BaseFormat):
+
     """
     MPEG(TS) container, used mainly for MPEG 1/2 video codecs.
     """
@@ -104,6 +113,7 @@ class MpegFormat(BaseFormat):
 
 
 class Mp3Format(BaseFormat):
+
     """
     Mp3 container, used audio-only mp3 files
     """
@@ -112,6 +122,7 @@ class Mp3Format(BaseFormat):
 
 
 class WmvFormat(BaseFormat):
+
     """
     WMV container.
     """

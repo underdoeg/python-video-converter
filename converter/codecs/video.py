@@ -5,6 +5,7 @@ from . import BaseCodec
 
 
 class VideoCodec(BaseCodec):
+
     """
     Base video codec class handles general video options. Possible
     parameters are:
@@ -181,6 +182,7 @@ class VideoCodec(BaseCodec):
 
 
 class VideoNullCodec(VideoCodec):
+
     """
     Null video codec (no video).
     """
@@ -192,6 +194,7 @@ class VideoNullCodec(VideoCodec):
 
 
 class VideoCopyCodec(VideoCodec):
+
     """
     Copy video stream directly from the source.
     """
@@ -202,6 +205,7 @@ class VideoCopyCodec(VideoCodec):
 
 
 class TheoraCodec(VideoCodec):
+
     """
     Theora video codec.
     @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
@@ -222,6 +226,7 @@ class TheoraCodec(VideoCodec):
 
 
 class H264Codec(VideoCodec):
+
     """
     H.264/AVC video codec.
     @see http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide
@@ -253,6 +258,7 @@ class H264Codec(VideoCodec):
 
 
 class DivxCodec(VideoCodec):
+
     """
     DivX video codec.
     """
@@ -261,6 +267,7 @@ class DivxCodec(VideoCodec):
 
 
 class Vp8Codec(VideoCodec):
+
     """
     Google VP8 video codec.
     """
@@ -269,6 +276,7 @@ class Vp8Codec(VideoCodec):
 
 
 class H263Codec(VideoCodec):
+
     """
     H.263 video codec.
     """
@@ -277,6 +285,7 @@ class H263Codec(VideoCodec):
 
 
 class FlvCodec(VideoCodec):
+
     """
     Flash Video codec.
     """
@@ -285,6 +294,7 @@ class FlvCodec(VideoCodec):
 
 
 class MpegCodec(VideoCodec):
+
     """
     Base MPEG video codec.
     """
@@ -293,6 +303,7 @@ class MpegCodec(VideoCodec):
     # again in vf; take care to put it *before* crop/pad, so
     # it uses the same adjusted dimensions as the codec itself
     # (pad/crop will adjust it further if neccessary)
+
     def _codec_specific_parse_options(self, safe):
         w = safe['width']
         h = safe['height']
@@ -310,6 +321,7 @@ class MpegCodec(VideoCodec):
 
 
 class Mpeg1Codec(MpegCodec):
+
     """
     MPEG-1 video codec.
     """
@@ -318,6 +330,7 @@ class Mpeg1Codec(MpegCodec):
 
 
 class Mpeg2Codec(MpegCodec):
+
     """
     MPEG-2 video codec.
     """
@@ -326,6 +339,7 @@ class Mpeg2Codec(MpegCodec):
 
 
 class WmvCodec(VideoCodec):
+
     """
     WMV video codec.
     """

@@ -18,6 +18,7 @@ class FFMpegError(Exception):
 
 
 class FFMpegConvertError(Exception):
+
     def __init__(self, message, cmd, output, details=None, pid=0):
         """
         @param    message: Error message.
@@ -49,6 +50,7 @@ class FFMpegConvertError(Exception):
 
 
 class MediaFormatInfo(object):
+
     """
     Describes the media container format. The attributes are:
       * format - format (short) name (eg. "ogg")
@@ -88,6 +90,7 @@ class MediaFormatInfo(object):
 
 
 class MediaStreamInfo(object):
+
     """
     Describes one stream inside a media file. The general
     attributes are:
@@ -227,6 +230,7 @@ class MediaStreamInfo(object):
 
 
 class MediaInfo(object):
+
     """
     Information about media object, as parsed by ffprobe.
     The attributes are:
@@ -304,6 +308,7 @@ class MediaInfo(object):
 
 
 class FFMpeg(object):
+
     """
     FFMPeg wrapper object, takes care of calling the ffmpeg binaries,
     passing options and parsing the output.
@@ -481,7 +486,8 @@ class FFMpeg(object):
 
             if line.startswith('Received signal'):
                 # Received signal 15: terminating.
-                raise FFMpegConvertError(line.split(':')[0], cmd, total_output, pid=p.pid)
+                raise FFMpegConvertError(
+                    line.split(':')[0], cmd, total_output, pid=p.pid)
             if line.startswith(infile + ': '):
                 err = line[len(infile) + 2:]
                 raise FFMpegConvertError('Encoding error', cmd, total_output,
@@ -530,7 +536,9 @@ class FFMpeg(object):
             cmds.extend([
                 '-f', 'image2', '-vframes', '1',
                 '-ss', str(thumb[0]), thumb[1],
-                '-q:v', str(FFMpeg.DEFAULT_JPEG_QUALITY if len(thumb) < 4 else str(thumb[3])),
+                '-q:v', str(
+                    FFMpeg.DEFAULT_JPEG_QUALITY if len(
+                        thumb) < 4 else str(thumb[3])),
             ])
 
         p = self._spawn(cmds)
