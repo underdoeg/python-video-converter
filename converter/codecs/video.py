@@ -30,7 +30,7 @@ class VideoCodec(BaseCodec):
 
     Supported video codecs are: null (no video), copy (copy directly
     from the source), Theora, H.264/AVC, DivX, VP8, H.263, Flv,
-    MPEG-1, MPEG-2.
+    MPEG-1, MPEG-2, WMV.
     """
 
     codec_type = "video"
@@ -323,3 +323,11 @@ class Mpeg2Codec(MpegCodec):
     """
     codec_name = 'mpeg2'
     ffmpeg_codec_name = 'mpeg2video'
+
+
+class WmvCodec(VideoCodec):
+    """
+    WMV video codec.
+    """
+    codec_name = 'wmv'
+    ffmpeg_codec_name = 'msmpeg4'
