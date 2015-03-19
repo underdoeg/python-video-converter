@@ -13,8 +13,7 @@ class AudioCodec(BaseCodec):
       * bitrate (integer) - stream bitrate
       * samplerate (integer) - sample rate (frequency)
 
-    Supported audio codecs are: null (no audio), copy (copy from
-    original), vorbis, aac, mp3, mp2
+    Supported audio codecs are: null (no audio), copy (copy from original), vorbis, aac, ac3, flac, dts mp3, mp2, wma
     """
 
     codec_type = "audio"
@@ -157,3 +156,11 @@ class Mp2Codec(AudioCodec):
     """
     codec_name = 'mp2'
     ffmpeg_codec_name = 'mp2'
+
+
+class WmaCodec(AudioCodec):
+    """
+    WMA audio codec.
+    """
+    codec_name = "wma"
+    ffmpeg_codec_name = "wmav2"
