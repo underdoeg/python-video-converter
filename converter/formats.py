@@ -23,7 +23,7 @@ class BaseFormat(object):
     """
     Base format class.
 
-    Supported formats are: ogg, avi, mkv, webm, flv, mov, mp4, mpeg
+    Supported formats are: ogg, avi, mkv, webm, flv, mov, mp4, mpeg, wmv
     """
 
     __metaclass__ = MetaBaseFormat
@@ -89,8 +89,7 @@ class MovFormat(BaseFormat):
 
 class Mp4Format(BaseFormat):
     """
-    Mp4 container format, the default Format for H.264
-    video content.
+    Mp4 container format, the default Format for H.264 video content.
     """
     format_name = 'mp4'
     ffmpeg_format_name = 'mp4'
@@ -110,3 +109,11 @@ class Mp3Format(BaseFormat):
     """
     format_name = 'mp3'
     ffmpeg_format_name = 'mp3'
+
+
+class WmvFormat(BaseFormat):
+    """
+    WMV container.
+    """
+    format_name = 'wmv'
+    ffmpeg_format_name = 'msmpeg4'
