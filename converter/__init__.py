@@ -117,7 +117,7 @@ class Converter(object):
 
         if 'map' in opt:
             m = opt['map']
-            if not type(m) == int:
+            if not isinstance(m, int):
                 raise ConverterError('map needs to be int')
             else:
                 format_options.extend(['-map', str(m)])
@@ -224,7 +224,8 @@ class Converter(object):
         """
         return self.ffmpeg.probe(fname, posters_as_video)
 
-    def thumbnail(self, fname, time, outfile, size=None, quality=FFMpeg.DEFAULT_JPEG_QUALITY):
+    def thumbnail(self, fname, time, outfile,
+                  size=None, quality=FFMpeg.DEFAULT_JPEG_QUALITY):
         """
         Create a thumbnail of the media file. See the documentation of
         converter.FFMpeg.thumbnail() for details.

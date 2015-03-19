@@ -502,7 +502,8 @@ class FFMpeg(object):
             raise FFMpegConvertError('Exited with code %d' % p.returncode, cmd,
                                      total_output, pid=p.pid)
 
-    def thumbnail(self, fname, time, outfile, size=None, quality=DEFAULT_JPEG_QUALITY):
+    def thumbnail(self, fname, time, outfile,
+                  size=None, quality=DEFAULT_JPEG_QUALITY):
         """
         Create a thumbnal of media file, and store it to outfile
         @param time: time point (in seconds) (float or int)

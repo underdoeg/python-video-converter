@@ -25,7 +25,7 @@ def verify_progress(p):
 
     prev = 0
     for i in li:
-        if type(i) != int or i < 0 or i > 100:
+        if not isinstance(i, int) or i < 0 or i > 100:
             return False
         if i < prev:
             return False
@@ -390,7 +390,12 @@ class TestFFMpeg(unittest.TestCase):
 
         conv = c.convert('test1.ogg', self.video_file_path, {
             'format': 'ogg',
-            'video': {'codec': 'theora', 'width': 160, 'height': 120, 'fps': 15, 'bitrate': 300},
+            'video':
+            {'codec': 'theora',
+             'width': 160,
+             'height': 120,
+             'fps': 15,
+             'bitrate': 300},
             'audio': {'codec': 'vorbis', 'channels': 1, 'bitrate': 32}
         })
 
@@ -408,7 +413,11 @@ class TestFFMpeg(unittest.TestCase):
         self.video_file_path = 'xx.ogg'
         options = {
             'format': 'ogg',
-            'audio': {'codec': 'vorbis', 'samplerate': 11025, 'channels': 1, 'bitrate': 16},
+            'audio': {
+                'codec': 'vorbis',
+                'samplerate': 11025,
+                'channels': 1,
+                'bitrate': 16},
             'video': {'codec': 'theora', 'bitrate': 128, 'width': 360, 'height': 200, 'fps': 15}
         }
         options_repr = repr(options)
@@ -426,7 +435,12 @@ class TestFFMpeg(unittest.TestCase):
         c = Converter()
         conv = c.convert('test1.ogg', self.video_file_path, {
             'format': 'webm',
-            'video': {'codec': 'vp8', 'width': 160, 'height': 120, 'fps': 15, 'bitrate': 300},
+            'video':
+            {'codec': 'vp8',
+             'width': 160,
+             'height': 120,
+             'fps': 15,
+             'bitrate': 300},
             'audio': {'codec': 'vorbis', 'channels': 1, 'bitrate': 32}
         })
 
