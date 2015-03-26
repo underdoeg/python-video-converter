@@ -11,7 +11,9 @@ class VideoCodec(BaseCodec):
     parameters are:
       * codec (string) - video codec name
       * bitrate (string) - stream bitrate
+      * max_bitrate (string) - maximum stream bitrate
       * fps (integer) - frames per second
+      * keyframe_interval (integer) - keyframe interval
       * width (integer) - video width
       * height (integer) - video height
       * mode (string) - aspect preserval mode; one of:
@@ -38,7 +40,9 @@ class VideoCodec(BaseCodec):
     encoder_options = {
         'codec': str,
         'bitrate': int,
+        'max_bitrate': int,
         'fps': int,
+        'keyframe_interval': int,
         'width': int,
         'height': int,
         'mode': str,
@@ -114,10 +118,20 @@ class VideoCodec(BaseCodec):
             if f < 1 or f > 120:
                 del safe['fps']
 
+        if 'keyframe_interval' in safe:
+            ki = safe['keyframe_interval']
+            if ki < 1 or ki > 1500:
+                del safe['keyframe_interval']
+
         if 'bitrate' in safe:
             br = safe['bitrate']
             if br < 16 or br > 15000:
                 del safe['bitrate']
+
+        if 'max_bitrate' in safe:
+            mb = safe['max_bitrate']
+            if mb < 16 or mb > 15000:
+                del safe['max_bitrate']
 
         w = None
         h = None
@@ -144,7 +158,7 @@ class VideoCodec(BaseCodec):
 
         mode = 'stretch'
         if 'mode' in safe:
-            if safe['mode'] in ['stretch', 'crop', 'pad']:
+            if safe['mode'] in ('stretch', 'crop', 'pad'):
                 mode = safe['mode']
 
         ow, oh = w, h  # FIXED
@@ -166,8 +180,12 @@ class VideoCodec(BaseCodec):
         optlist = ['-vcodec', self.ffmpeg_codec_name]
         if 'fps' in safe:
             optlist.extend(['-r', str(safe['fps'])])
+        if 'keyframe_interval' in safe:
+            optlist.extend(['-g', str(safe['keyframe_interval'])])
         if 'bitrate' in safe:
             optlist.extend(['-vb', str(safe['bitrate']) + 'k'])  # FIXED
+        if 'max_bitrate' in safe:
+            optlist.extend(['-maxrate', str(safe['max_bitrate']) + 'k', '-bufsize', '10k'])
         if w and h:
             optlist.extend(['-s', '%dx%d' % (w, h)])
 
