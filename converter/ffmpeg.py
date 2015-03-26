@@ -106,6 +106,7 @@ class MediaStreamInfo(object):
       * video_width - width of video in pixels
       * video_height - height of video in pixels
       * video_fps - average frames per second
+      * video_pixel_format - pixel format
     Audio-specific attributes are:
       * audio_channels - the number of channels in the stream
       * audio_samplerate - sample rate (Hz)
@@ -121,6 +122,7 @@ class MediaStreamInfo(object):
         self.video_width = None
         self.video_height = None
         self.video_fps = None
+        self.video_pixel_format = None
         self.audio_channels = None
         self.audio_samplerate = None
         self.attached_pic = None
@@ -163,6 +165,8 @@ class MediaStreamInfo(object):
             self.video_width = self.parse_int(val)
         elif key == 'height':
             self.video_height = self.parse_int(val)
+        elif key == 'pix_fmt':
+            self.video_pixel_format = val
         elif key == 'channels':
             self.audio_channels = self.parse_int(val)
         elif key == 'sample_rate':
@@ -226,7 +230,7 @@ class MediaStreamInfo(object):
         else:
             value = 'MediaStreamInfo(%s)' % d
 
-        return value
+        return value.encode("utf-8")
 
 
 class MediaInfo(object):
