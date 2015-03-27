@@ -31,11 +31,37 @@ class BaseFormat(object):
 
     format_name = None
     ffmpeg_format_name = None
+    format_options = {
+        'format': str
+    }
 
     def parse_options(self, opt):
-        if 'format' not in opt or opt.get('format') != self.format_name:
+        safe = self.safe_options(opt)
+        if safe.get('format') != self.format_name:
             raise ValueError('invalid Format format')
-        return ['-f', self.ffmpeg_format_name]
+        optlist = ['-f', self.ffmpeg_format_name]
+        safe = self._format_specific_parse_options(safe)
+        optlist.extend(self._format_specific_produce_ffmpeg_list(safe))
+        return optlist
+
+    def _format_specific_parse_options(self, safe):
+        return safe
+
+    def _format_specific_produce_ffmpeg_list(self, safe):
+        return []
+
+    def safe_options(self, opts):
+        safe = {}
+        # Only copy options that are expected and of correct type
+        # (and do typecasting on them)
+        for k, v in opts.items():
+            if k in self.format_options:
+                typ = self.format_options[k]
+                try:
+                    safe[k] = typ(v)
+                except:
+                    pass
+        return safe
 
 
 class OggFormat(BaseFormat):
@@ -92,6 +118,10 @@ class MovFormat(BaseFormat):
     """
     format_name = 'mov'
     ffmpeg_format_name = 'mov'
+    format_options = BaseFormat.format_options.copy()
+    format_options.update({
+        'faststart': bool  # faststart mode
+    })
 
 
 class Mp4Format(BaseFormat):
@@ -101,6 +131,16 @@ class Mp4Format(BaseFormat):
     """
     format_name = 'mp4'
     ffmpeg_format_name = 'mp4'
+    format_options = BaseFormat.format_options.copy()
+    format_options.update({
+        'faststart': bool  # faststart mode
+    })
+
+    def _format_specific_parse_options(self, safe):
+        optlist = []
+        if safe.get('faststart', False):
+            optlist.extend(['-movflags', 'faststart'])
+        return optlist
 
 
 class MpegFormat(BaseFormat):
