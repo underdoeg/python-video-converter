@@ -3,7 +3,7 @@
 import os
 from converter.codecs import codec_lists
 from converter.formats import format_list
-from converter.ffmpeg import FFMpeg, FFMpegError, FFMpegConvertError
+from converter.ffmpeg import FFMpeg
 
 
 class ConverterError(Exception):

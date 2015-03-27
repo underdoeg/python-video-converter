@@ -236,10 +236,17 @@ class TheoraCodec(VideoCodec):
         # 5-7 is a good range to try (default is 200k bitrate)
     })
 
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 10:
+                del safe['quality']
+        return safe
+
     def _codec_specific_produce_ffmpeg_list(self, safe):
         optlist = []
         if 'quality' in safe:
-            optlist.extend(['-qscale:v', safe['quality']])
+            optlist.extend(['-qscale:v', str(safe['quality'])])
         return optlist
 
 
@@ -262,12 +269,19 @@ class H264Codec(VideoCodec):
         'tune': str,  # default: not-set, for valid values see above link
     })
 
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 51:
+                del safe['quality']
+        return safe
+
     def _codec_specific_produce_ffmpeg_list(self, safe):
         optlist = []
         if 'preset' in safe:
             optlist.extend(['-preset', safe['preset']])
         if 'quality' in safe:
-            optlist.extend(['-crf', safe['quality']])
+            optlist.extend(['-crf', str(safe['quality'])])
         if 'profile' in safe:
             optlist.extend(['-profile', safe['profile']])
         if 'tune' in safe:
@@ -282,6 +296,25 @@ class DivxCodec(VideoCodec):
     """
     codec_name = 'divx'
     ffmpeg_codec_name = 'mpeg4'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # quality, range:1(lossless)-31(worst)
+        # 2 is visually lossless. Doubling the value results in half the bitrate.
+        # recommended: 3-5, http://slhck.info/video-encoding
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 1 or q > 31:
+                del safe['quality']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-qscale:v', str(safe['quality'])])
+        return optlist
 
 
 class Vp8Codec(VideoCodec):
@@ -316,12 +349,18 @@ class MpegCodec(VideoCodec):
     """
     Base MPEG video codec.
     """
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # quality, range:1(lossless)-31(worst)
+        # 2 is visually lossless. Doubling the value results in half the bitrate.
+        # recommended: 3-5, http://slhck.info/video-encoding
+    })
+
     # Workaround for a bug in ffmpeg in which aspect ratio
     # is not correctly preserved, so we have to set it
     # again in vf; take care to put it *before* crop/pad, so
     # it uses the same adjusted dimensions as the codec itself
     # (pad/crop will adjust it further if neccessary)
-
     def _codec_specific_parse_options(self, safe):
         w = safe['width']
         h = safe['height']
@@ -335,7 +374,18 @@ class MpegCodec(VideoCodec):
             else:
                 safe['aspect_filters'] = tmp + ',' + filters
 
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 1 or q > 31:
+                del safe['quality']
+
         return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-qscale:v', str(safe['quality'])])
+        return optlist
 
 
 class Mpeg1Codec(MpegCodec):
@@ -363,3 +413,23 @@ class WmvCodec(VideoCodec):
     """
     codec_name = 'wmv'
     ffmpeg_codec_name = 'msmpeg4'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # quality, range:1(lossless)-31(worst)
+        # 2 is visually lossless. Doubling the value results in half the bitrate.
+        # recommended: 3-5, http://slhck.info/video-encoding
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 1 or q > 31:
+                del safe['quality']
+
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-qscale:v', str(safe['quality'])])
+        return optlist

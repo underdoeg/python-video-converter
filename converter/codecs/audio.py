@@ -98,7 +98,7 @@ class VorbisCodec(AudioCodec):
     def _codec_specific_produce_ffmpeg_list(self, safe):
         optlist = []
         if 'quality' in safe:
-            optlist.extend(['-qscale:a', safe['quality']])
+            optlist.extend(['-qscale:a', str(safe['quality'])])
         return optlist
 
 
@@ -122,6 +122,24 @@ class FdkAacCodec(AudioCodec):
     """
     codec_name = 'libfdk_aac'
     ffmpeg_codec_name = 'libfdk_aac'
+    encoder_options = AudioCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # audio quality. Range is 1-5(highest quality)
+        # Default is 4
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 1 or q > 5:
+                del safe['quality']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-vbr', str(safe['quality'])])
+        return optlist
 
 
 class Ac3Codec(AudioCodec):
@@ -158,6 +176,24 @@ class Mp3Codec(AudioCodec):
     """
     codec_name = 'mp3'
     ffmpeg_codec_name = 'libmp3lame'
+    encoder_options = AudioCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # audio quality. Range is 0-9(lowest quality)
+        # Recommended: 2, default is 4
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 9:
+                del safe['quality']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-qscale:a', str(safe['quality'])])
+        return optlist
 
 
 class Mp2Codec(AudioCodec):
