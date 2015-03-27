@@ -110,9 +110,24 @@ class AacCodec(AudioCodec):
     codec_name = 'aac'
     ffmpeg_codec_name = 'aac'
     aac_experimental_enable = ['-strict', 'experimental']
+    encoder_options = AudioCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': float,  # audio quality. Range is 0.1-10(highest quality)
+        # Recommended: 1, https://trac.ffmpeg.org/wiki/Encode/AAC
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 9:
+                del safe['quality']
+        return safe
 
     def _codec_specific_produce_ffmpeg_list(self, safe):
-        return self.aac_experimental_enable
+        optlist = self.aac_experimental_enable
+        if 'quality' in safe:
+            optlist.extend(['-qscale:a', str(safe['quality'])])
+        return optlist
 
 
 class FdkAacCodec(AudioCodec):
