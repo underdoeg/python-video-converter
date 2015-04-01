@@ -185,7 +185,7 @@ class VideoCodec(BaseCodec):
         if 'bitrate' in safe:
             optlist.extend(['-vb', str(safe['bitrate']) + 'k'])  # FIXED
         if 'max_bitrate' in safe:
-            optlist.extend(['-maxrate', str(safe['max_bitrate']) + 'k', '-bufsize', '10k'])
+            optlist.extend(['-maxrate', str(safe['max_bitrate']) + 'k', '-bufsize', str(safe['max_bitrate']) + 'k'])
         if w and h:
             optlist.extend(['-s', '%dx%d' % (w, h)])
 
