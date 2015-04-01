@@ -124,7 +124,7 @@ class AacCodec(AudioCodec):
         return safe
 
     def _codec_specific_produce_ffmpeg_list(self, safe):
-        optlist = self.aac_experimental_enable
+        optlist = list(self.aac_experimental_enable)
         if 'quality' in safe:
             optlist.extend(['-qscale:a', str(safe['quality'])])
         return optlist
