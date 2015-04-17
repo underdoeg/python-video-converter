@@ -386,9 +386,6 @@ class FFMpeg(object):
             A video stream, defaults to True
         """
 
-        if not os.path.exists(fname):
-            return None
-
         info = MediaInfo(posters_as_video)
 
         p = self._spawn([self.ffprobe_path,

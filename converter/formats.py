@@ -37,7 +37,7 @@ class BaseFormat(object):
 
     def parse_options(self, opt):
         safe = self.safe_options(opt)
-        if safe.get('format') != self.format_name:
+        if 'format' not in safe or safe['format'] != self.format_name:
             raise ValueError('invalid Format format')
         optlist = ['-f', self.ffmpeg_format_name]
         safe = self._format_specific_parse_options(safe)

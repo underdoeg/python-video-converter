@@ -5,3 +5,4 @@ Samuel Goldszmidt <samuel.goldszmidt@gmail.com>
 Senko Rasic <senko.rasic@dobarkod.hr>
 Taha Jahangir <mtjahangir@gmail.com>
 Tomaz Muraus <tomaz@tomaz.me>
+Sébastien de Melo <sebastien.de-melo@ubicast.eu>

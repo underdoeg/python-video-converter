@@ -48,5 +48,8 @@ setup(
         'doc': DocCommand
     },
 
-    packages=['converter'],
+    packages=[
+        'converter',
+        'converter.codecs',
+    ],
 )
