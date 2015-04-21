@@ -442,7 +442,7 @@ class FFMpeg(object):
         yielded = False
         buf = ''
         total_output = ''
-        pat = re.compile(r'time=([0-9.:]+) ')
+        pat = re.compile(r'time=([0-9.:]+)')
         while True:
             if timeout:
                 signal.alarm(timeout)
@@ -455,13 +455,8 @@ class FFMpeg(object):
             if not ret:
                 break
 
-            ret = ret.decode(console_encoding)
-            total_output += ret
-            buf += ret
-            if '\r' in buf:
-                line, buf = buf.split('\r', 1)
-
-                tmp = pat.findall(line)
+            def get_timecode(out):
+                tmp = pat.findall(out)
                 if len(tmp) == 1:
                     timespec = tmp[0]
                     if ':' in timespec:
@@ -470,8 +465,25 @@ class FFMpeg(object):
                             timecode = 60 * timecode + float(part)
                     else:
                         timecode = float(tmp[0])
+                    return timecode
+                return None
+
+            ret = ret.decode(console_encoding)
+            total_output += ret
+            buf += ret
+            if '\r' in buf:
+                line, buf = buf.split('\r', 1)
+
+                timecode = get_timecode(line)
+                if timecode:
                     yielded = True
                     yield timecode
+        if not yielded:
+            # There may have been a single time, check it
+            timecode = get_timecode(total_output)
+            if timecode:
+                yielded = True
+                yield timecode
 
         if timeout:
             signal.signal(signal.SIGALRM, signal.SIG_DFL)
