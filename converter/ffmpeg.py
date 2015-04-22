@@ -391,7 +391,7 @@ class FFMpeg(object):
         p = self._spawn([self.ffprobe_path,
                          '-show_format', '-show_streams', fname])
         stdout_data, _ = p.communicate()
-        stdout_data = stdout_data.decode(console_encoding)
+        stdout_data = stdout_data.decode(console_encoding, "replace")
         info.parse_ffprobe(stdout_data)
 
         if not info.format.format and len(info.streams) == 0:
@@ -468,7 +468,7 @@ class FFMpeg(object):
                     return timecode
                 return None
 
-            ret = ret.decode(console_encoding)
+            ret = ret.decode(console_encoding, "replace")
             total_output += ret
             buf += ret
             if '\r' in buf:
@@ -559,6 +559,6 @@ class FFMpeg(object):
         _, stderr_data = p.communicate()
         if stderr_data == '':
             raise FFMpegError('Error while calling ffmpeg binary')
-        stderr_data.decode(console_encoding)
+        stderr_data.decode(console_encoding, "replace")
         if any(not os.path.exists(option[1]) for option in option_list):
             raise FFMpegError('Error creating thumbnail: %s' % stderr_data)
