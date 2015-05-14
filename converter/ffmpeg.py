@@ -433,13 +433,13 @@ class FFMpeg(object):
             raise FFMpegError('Error while calling ffmpeg binary')
 
         if timeout:
-            def on_sigalrm(*_):
-                signal.signal(signal.SIGALRM, signal.SIG_DFL)
+            def on_sigvtalrm(*_):
+                signal.signal(signal.SIGVTALRM, signal.SIG_DFL)
                 if p.poll() is None:
                     p.kill()
                 raise Exception('timed out while waiting for ffmpeg')
 
-            signal.signal(signal.SIGALRM, on_sigalrm)
+            signal.signal(signal.SIGVTALRM, on_sigvtalrm)
 
         yielded = False
         buf = ''
@@ -461,12 +461,12 @@ class FFMpeg(object):
 
         while True:
             if timeout:
-                signal.alarm(timeout)
+                signal.setitimer(signal.ITIMER_VIRTUAL, timeout)
 
             ret = p.stderr.read(10)
 
             if timeout:
-                signal.alarm(0)
+                signal.setitimer(signal.ITIMER_VIRTUAL, 0)
 
             if not ret:
                 break
