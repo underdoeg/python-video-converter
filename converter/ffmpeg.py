@@ -427,22 +427,38 @@ class FFMpeg(object):
         cmds.extend(opts)
         cmds.extend(['-y', outfile])
 
-        if timeout:
-            def on_sigalrm(*_):
-                signal.signal(signal.SIGALRM, signal.SIG_DFL)
-                raise Exception('timed out while waiting for ffmpeg')
-
-            signal.signal(signal.SIGALRM, on_sigalrm)
-
         try:
             p = self._spawn(cmds)
         except OSError:
             raise FFMpegError('Error while calling ffmpeg binary')
 
+        if timeout:
+            def on_sigalrm(*_):
+                signal.signal(signal.SIGALRM, signal.SIG_DFL)
+                if p.poll() is None:
+                    p.kill()
+                raise Exception('timed out while waiting for ffmpeg')
+
+            signal.signal(signal.SIGALRM, on_sigalrm)
+
         yielded = False
         buf = ''
         total_output = ''
         pat = re.compile(r'time=([0-9.:]+)')
+
+        def get_timecode(out):
+            tmp = pat.findall(out)
+            if len(tmp) == 1:
+                timespec = tmp[0]
+                if ':' in timespec:
+                    timecode = 0
+                    for part in timespec.split(':'):
+                        timecode = 60 * timecode + float(part)
+                else:
+                    timecode = float(tmp[0])
+                return timecode
+            return None
+
         while True:
             if timeout:
                 signal.alarm(timeout)
@@ -454,19 +470,6 @@ class FFMpeg(object):
 
             if not ret:
                 break
-
-            def get_timecode(out):
-                tmp = pat.findall(out)
-                if len(tmp) == 1:
-                    timespec = tmp[0]
-                    if ':' in timespec:
-                        timecode = 0
-                        for part in timespec.split(':'):
-                            timecode = 60 * timecode + float(part)
-                    else:
-                        timecode = float(tmp[0])
-                    return timecode
-                return None
 
             ret = ret.decode(console_encoding, "replace")
             total_output += ret
