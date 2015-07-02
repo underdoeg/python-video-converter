@@ -324,6 +324,26 @@ class Vp8Codec(VideoCodec):
     """
     codec_name = 'vp8'
     ffmpeg_codec_name = 'libvpx'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'quality': int,  # quality, range:0(lossless)-63(worst)
+        # recommended: 10, http://slhck.info/video-encoding
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 63:
+                del safe['quality']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'quality' in safe:
+            optlist.extend(['-crf', str(safe['quality'])])
+            if 'max_bitrate' in safe:
+                optlist.extend(['-vb', str(safe['max_bitrate']) + 'k'])
+        return optlist
 
 
 class H263Codec(VideoCodec):
