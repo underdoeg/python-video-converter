@@ -550,10 +550,10 @@ class FFMpeg(object):
 
         output_seeking = len(option_list) > 1 or output_seeking
 
-        cmds = list()
+        cmds = [self.ffmpeg_path]
         if not output_seeking:
-            cmds.extend(['-ss', str(option_list[0][0]), option_list[0][1]])
-        cmds = [self.ffmpeg_path, '-i', fname, '-y', '-an']
+            cmds.extend(['-ss', str(option_list[0][0])])
+        cmds.extend(['-i', fname, '-y', '-an'])
         for thumb in option_list:
             if len(thumb) > 2 and thumb[2]:
                 cmds.extend(['-s', str(thumb[2])])
@@ -565,6 +565,8 @@ class FFMpeg(object):
             ])
             if output_seeking:
                 cmds.extend(['-ss', str(thumb[0]), thumb[1]])
+            else:
+                cmds.append(thumb[1])
 
         p = self._spawn(cmds)
         _, stderr_data = p.communicate()
