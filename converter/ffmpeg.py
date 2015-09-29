@@ -532,12 +532,15 @@ class FFMpeg(object):
         """
         return self.thumbnails(fname, [(time, outfile, size, quality)])
 
-    def thumbnails(self, fname, option_list):
+    def thumbnails(self, fname, option_list, output_seeking=False):
         """
         Create one or more thumbnails of video.
         @param option_list: a list of tuples like:
             (time, outfile, size=None, quality=DEFAULT_JPEG_QUALITY)
             see documentation of `converter.FFMpeg.thumbnail()` for details.
+        @param output_seeking: a boolean whether the seeking should be done
+            on the output (slow but doesn't reset the timestamps) or on the
+            input
 
         >>> FFMpeg().thumbnails('test1.ogg', [(5, '/tmp/shot.png', '320x240'),
         >>>                                   (10, '/tmp/shot2.png', None, 5)])
@@ -545,18 +548,23 @@ class FFMpeg(object):
         if not os.path.exists(fname):
             raise IOError('No such file: ' + fname)
 
+        output_seeking = len(option_list) > 1 or output_seeking
+
+        cmds = list()
+        if not output_seeking:
+            cmds.extend(['-ss', str(option_list[0][0]), option_list[0][1]])
         cmds = [self.ffmpeg_path, '-i', fname, '-y', '-an']
         for thumb in option_list:
             if len(thumb) > 2 and thumb[2]:
                 cmds.extend(['-s', str(thumb[2])])
-
             cmds.extend([
                 '-f', 'image2', '-vframes', '1',
-                '-ss', str(thumb[0]), thumb[1],
                 '-q:v', str(
                     FFMpeg.DEFAULT_JPEG_QUALITY if len(
                         thumb) < 4 else str(thumb[3])),
             ])
+            if output_seeking:
+                cmds.extend(['-ss', str(thumb[0]), thumb[1]])
 
         p = self._spawn(cmds)
         _, stderr_data = p.communicate()
