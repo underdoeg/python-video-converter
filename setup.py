@@ -36,7 +36,7 @@ class DocCommand(Command):
 
 setup(
     name='VideoConverter',
-    version='1.2.0',
+    version='1.2.1',
     description='Video Converter library',
     url='https://github.com/senko/python-video-converter/',
 

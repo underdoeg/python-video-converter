@@ -2,7 +2,6 @@
 
 import errno
 import os
-import shutil
 from converter.codecs import codec_lists
 from converter.formats import format_list
 from converter.ffmpeg import FFMpeg
@@ -227,8 +226,6 @@ class Converter(object):
         if not info.video and not info.audio:
             raise ConverterError('Source file has no audio or video streams')
 
-        if os.path.isdir(working_directory):
-            shutil.rmtree(working_directory)
         try:
             os.makedirs(os.path.join(working_directory, output_directory))
         except Exception, e:
