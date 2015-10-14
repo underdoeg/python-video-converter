@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
+import errno
 import os
+import shutil
 from converter.codecs import codec_lists
 from converter.formats import format_list
 from converter.ffmpeg import FFMpeg
@@ -213,6 +215,35 @@ class Converter(object):
             for timecode in self.ffmpeg.convert(infile, outfile, optlist,
                                                 timeout=timeout):
                 yield int((100.0 * timecode) / info.format.duration)
+
+    def segment(self, infile, working_directory, output_file, output_directory, timeout=10):
+        if not os.path.exists(infile):
+            raise ConverterError("Source file doesn't exist: " + infile)
+
+        info = self.ffmpeg.probe(infile)
+        if info is None:
+            raise ConverterError("Can't get information about source file")
+
+        if not info.video and not info.audio:
+            raise ConverterError('Source file has no audio or video streams')
+
+        if os.path.isdir(working_directory):
+            shutil.rmtree(working_directory)
+        try:
+            os.makedirs(os.path.join(working_directory, output_directory))
+        except Exception, e:
+            if e.errno != errno.EEXIST:
+                raise e
+        current_directory = os.getcwd()
+        os.chdir(working_directory)
+        optlist = [
+            "-flags", "-global_header", "-f", "segment", "-segment_time", "1", "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
+            "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
+        ]
+        outfile = "%s/media%%05d.ts" % output_directory
+        for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
+            yield int((100.0 * timecode) / info.format.duration)
+        os.chdir(current_directory)
 
     def probe(self, fname, posters_as_video=True):
         """
