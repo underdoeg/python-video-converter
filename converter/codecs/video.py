@@ -328,6 +328,8 @@ class Vp8Codec(VideoCodec):
     encoder_options.update({
         'quality': int,  # quality, range:0(lossless)-63(worst)
         # recommended: 10, http://slhck.info/video-encoding
+        'threads': int,  # threads number
+        # default: 1, recommended: number of real cores - 1
     })
 
     def _codec_specific_parse_options(self, safe):
@@ -335,6 +337,10 @@ class Vp8Codec(VideoCodec):
             q = safe['quality']
             if q < 0 or q > 63:
                 del safe['quality']
+        if 'threads' in safe:
+            t = safe['threads']
+            if t < 1:
+                del safe['threads']
         return safe
 
     def _codec_specific_produce_ffmpeg_list(self, safe):
@@ -343,6 +349,8 @@ class Vp8Codec(VideoCodec):
             optlist.extend(['-crf', str(safe['quality'])])
             if 'max_bitrate' in safe:
                 optlist.extend(['-vb', str(safe['max_bitrate']) + 'k'])
+        if 'threads' in safe:
+            optlist.extend(['-threads', str(safe['threads'])])
         return optlist
 
 
