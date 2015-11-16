@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from six import with_metaclass
 
 codec_lists = dict()
 
@@ -22,13 +23,11 @@ class MetaBaseCodec(type):
         return sub_class
 
 
-class BaseCodec(object):
+class BaseCodec(with_metaclass(MetaBaseCodec, object)):
 
     """
     Base audio/video codec class.
     """
-
-    __metaclass__ = MetaBaseCodec
 
     encoder_options = {}
     codec_name = None

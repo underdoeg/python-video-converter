@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from six import with_metaclass
 
 format_list = list()
 
@@ -19,15 +20,13 @@ class MetaBaseFormat(type):
         return sub_class
 
 
-class BaseFormat(object):
+class BaseFormat(with_metaclass(MetaBaseFormat, object)):
 
     """
     Base format class.
 
     Supported formats are: ogg, avi, mkv, webm, flv, mov, mp4, mpeg, wmv
     """
-
-    __metaclass__ = MetaBaseFormat
 
     format_name = None
     ffmpeg_format_name = None

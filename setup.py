@@ -52,4 +52,8 @@ setup(
         'converter',
         'converter.codecs',
     ],
+
+    setup_requires=[
+        'six',
+    ],
 )
