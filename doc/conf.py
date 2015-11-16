@@ -42,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Video Converter'
-copyright = u'2011-2013, Video Converter contributors'
+project = 'Video Converter'
+copyright = '2011-2013, Video Converter contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -180,8 +180,8 @@ htmlhelp_basename = 'VideoConverterdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ('index', 'VideoConverter.tex', u'Video Converter Documentation',
-     u'Dobar Kod', 'manual'),
+    ('index', 'VideoConverter.tex', 'Video Converter Documentation',
+     'Dobar Kod', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -213,6 +213,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'videoconverter', u'Video Converter Documentation',
-     [u'Dobar Kod'], 1)
+    ('index', 'videoconverter', 'Video Converter Documentation',
+     ['Dobar Kod'], 1)
 ]

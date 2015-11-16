@@ -31,7 +31,7 @@ on top of it.
         }})
 
     for timecode in conv:
-        print "Converting (%f) ...\r" % timecode
+        print("Converting (%f) ...\r" % timecode)
 
 
 ## Documentation and tests

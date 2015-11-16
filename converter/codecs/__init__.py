@@ -61,6 +61,6 @@ class BaseCodec(object):
         return safe
 
 
-from audio import *
-from subtitle import *
-from video import *
+from converter.codecs.audio import *
+from converter.codecs.subtitle import *
+from converter.codecs.video import *

@@ -228,7 +228,7 @@ class Converter(object):
 
         try:
             os.makedirs(os.path.join(working_directory, output_directory))
-        except Exception, e:
+        except Exception as e:
             if e.errno != errno.EEXIST:
                 raise e
         current_directory = os.getcwd()
