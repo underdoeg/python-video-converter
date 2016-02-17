@@ -476,15 +476,14 @@ class FFMpeg(object):
             buf += ret
             if '\r' in buf:
                 line, buf = buf.split('\r', 1)
-
                 timecode = get_timecode(line)
-                if timecode:
+                if timecode is not None:
                     yielded = True
                     yield timecode
         if not yielded:
             # There may have been a single time, check it
             timecode = get_timecode(total_output)
-            if timecode:
+            if timecode is not None:
                 yielded = True
                 yield timecode
 
