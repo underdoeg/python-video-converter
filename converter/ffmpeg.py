@@ -230,7 +230,7 @@ class MediaStreamInfo(object):
         else:
             value = 'MediaStreamInfo(%s)' % d
 
-        return value.encode("utf-8")
+        return value
 
 
 class MediaInfo(object):
