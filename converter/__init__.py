@@ -12,7 +12,6 @@ class ConverterError(Exception):
 
 
 class Converter(object):
-
     """
     Converter class, encapsulates formats and codecs.
 
@@ -20,10 +19,7 @@ class Converter(object):
     """
 
     def __init__(self, ffmpeg_path=None, ffprobe_path=None):
-        """
-        Initialize a new Converter object.
-        """
-
+        """Initialize a new Converter object."""
         self.ffmpeg = FFMpeg(
             ffmpeg_path=ffmpeg_path, ffprobe_path=ffprobe_path)
         self.video_codecs = {}
@@ -48,9 +44,7 @@ class Converter(object):
             self.formats[name] = cls
 
     def parse_options(self, opt, twopass=None):
-        """
-        Parse format/codec options and prepare raw ffmpeg option list.
-        """
+        """Parse format/codec options and prepare raw ffmpeg option list."""
         if not isinstance(opt, dict):
             raise ConverterError('Invalid output specification')
 
@@ -136,9 +130,7 @@ class Converter(object):
 
     def convert(self, infile, outfile, options, twopass=False, timeout=10):
         """
-        Convert media file (infile) according to specified options, and
-        save it to outfile. For two-pass encoding, specify the pass (1 or 2)
-        in the twopass parameter.
+        Convert media file (infile) according to specified options, and save it to outfile. For two-pass encoding, specify the pass (1 or 2) in the twopass parameter.
 
         Options should be passed as a dictionary. The keys are:
             * format (mandatory, string) - container format; see
@@ -176,7 +168,6 @@ class Converter(object):
         >>> for timecode in conv:
         ...   pass # can be used to inform the user about the progress
         """
-
         if not isinstance(options, dict):
             raise ConverterError('Invalid options')
 
@@ -235,7 +226,7 @@ class Converter(object):
         os.chdir(working_directory)
         optlist = [
             "-flags", "-global_header", "-f", "segment", "-segment_time", "1", "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
-            "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
+            "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
         ]
         outfile = "%s/media%%05d.ts" % output_directory
         for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
@@ -244,25 +235,27 @@ class Converter(object):
 
     def probe(self, fname, posters_as_video=True):
         """
-        Examine the media file. See the documentation of
-        converter.FFMpeg.probe() for details.
+        Examine the media file.
+
+        See the documentation of converter.FFMpeg.probe() for details.
 
         :param posters_as_video: Take poster images (mainly for audio files) as
             A video stream, defaults to True
         """
         return self.ffmpeg.probe(fname, posters_as_video)
 
-    def thumbnail(self, fname, time, outfile,
-                  size=None, quality=FFMpeg.DEFAULT_JPEG_QUALITY):
+    def thumbnail(self, fname, time, outfile, size=None, quality=FFMpeg.DEFAULT_JPEG_QUALITY):
         """
-        Create a thumbnail of the media file. See the documentation of
-        converter.FFMpeg.thumbnail() for details.
+        Create a thumbnail of the media file.
+
+        See the documentation of converter.FFMpeg.thumbnail() for details.
         """
         return self.ffmpeg.thumbnail(fname, time, outfile, size, quality)
 
     def thumbnails(self, fname, option_list):
         """
-        Create one or more thumbnail of the media file. See the documentation
-        of converter.FFMpeg.thumbnails() for details.
+        Create one or more thumbnail of the media file.
+
+        See the documentation of converter.FFMpeg.thumbnails() for details.
         """
         return self.ffmpeg.thumbnails(fname, option_list)
