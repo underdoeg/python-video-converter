@@ -25,7 +25,7 @@ def verify_progress(p):
 
     prev = 0
     for i in li:
-        if not isinstance(i, int) or i < 0 or i > 100:
+        if not isinstance(i, float) or i < 0 or i > 1:
             return False
         if i < prev:
             return False
