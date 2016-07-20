@@ -181,28 +181,30 @@ class Converter(object):
         if not info.video and not info.audio:
             raise ConverterError('Source file has no audio or video streams')
 
+        preoptlist = []
         if info.video and 'video' in options:
             options = options.copy()
             v = options['video'] = options['video'].copy()
             v['src_width'] = info.video.video_width
             v['src_height'] = info.video.video_height
+            preoptlist = options['video'].get('ffmpeg_custom_launch_opts', '').split(' ')
 
         if info.format.duration < 0.01:
             raise ConverterError('Zero-length media')
 
         if twopass:
             optlist1 = self.parse_options(options, 1)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist1,
+            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist1,
                                                 timeout=timeout):
                 yield float(timecode) / info.format.duration
 
             optlist2 = self.parse_options(options, 2)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist2,
+            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist2,
                                                 timeout=timeout):
                 yield 0.5 + float(timecode) / info.format.duration
         else:
             optlist = self.parse_options(options, twopass)
-            for timecode in self.ffmpeg.convert(infile, outfile, optlist,
+            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist,
                                                 timeout=timeout):
                 yield float(timecode) / info.format.duration
 

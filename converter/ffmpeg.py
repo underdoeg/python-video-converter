@@ -399,7 +399,7 @@ class FFMpeg(object):
 
         return info
 
-    def convert(self, infile, outfile, opts, timeout=10):
+    def convert(self, preopts, infile, outfile, opts, timeout=10):
         """
         Convert the source media (infile) according to specified options
         (a list of ffmpeg switches as strings) and save it to outfile.
@@ -423,7 +423,10 @@ class FFMpeg(object):
         if not os.path.exists(infile):
             raise FFMpegError("Input file doesn't exist: " + infile)
 
-        cmds = [self.ffmpeg_path, '-i', infile]
+        cmds = [self.ffmpeg_path]
+        if preopts:
+            cmds.extend(preopts)
+        cmds.extend(['-i', infile])
         cmds.extend(opts)
         cmds.extend(['-y', outfile])
 
