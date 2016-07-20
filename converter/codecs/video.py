@@ -288,6 +288,41 @@ class H264Codec(VideoCodec):
             optlist.extend(['-tune', safe['tune']])
         return optlist
 
+class VaapiH264Codec(VideoCodec):
+
+    """
+    H.264/AVC video codec.
+    @see https://wiki.libav.org/Hardware/vaapi#H.264
+    """
+    codec_name = 'h264_vaapi'
+    ffmpeg_codec_name = 'h264_vaapi'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'preset': str,  # common presets are ultrafast, superfast, veryfast,
+        # faster, fast, medium(default), slow, slower, veryslow
+        'quality': int,  # constant rate factor, range:0(lossless)-51(worst)
+        # default:23, recommended: 18-28
+        'profile': str,  # default: not-set, for valid values see above link
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'quality' in safe:
+            q = safe['quality']
+            if q < 0 or q > 51:
+                del safe['quality']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        # ffmpeg must run with -vaapi_device /dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi before -i
+        optlist.extend(['-vf', 'format=nv12|vaapi,hwupload'])
+        if 'preset' in safe:
+            optlist.extend(['-preset', safe['preset']])
+        if 'quality' in safe:
+            optlist.extend(['-crf', str(safe['quality'])])
+        if 'profile' in safe:
+            optlist.extend(['-profile', safe['profile']])
+        return optlist
 
 class DivxCodec(VideoCodec):
 
