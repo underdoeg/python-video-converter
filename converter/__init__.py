@@ -232,7 +232,7 @@ class Converter(object):
             "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
         ]
         outfile = "%s/media%%05d.ts" % output_directory
-        for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
+        for timecode in self.ffmpeg.convert([], infile, outfile, optlist, timeout=timeout):
             yield int((100.0 * timecode) / info.format.duration)
         os.chdir(current_directory)
 
