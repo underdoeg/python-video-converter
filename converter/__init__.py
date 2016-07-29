@@ -188,6 +188,7 @@ class Converter(object):
             v['src_width'] = info.video.video_width
             v['src_height'] = info.video.video_height
             preoptlist = options['video'].get('ffmpeg_custom_launch_opts', '').split(' ')
+            preoptlist = [arg for arg in preoptlist if arg]
 
         if info.format.duration < 0.01:
             raise ConverterError('Zero-length media')
