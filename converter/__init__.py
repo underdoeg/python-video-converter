@@ -181,13 +181,14 @@ class Converter(object):
         if not info.video and not info.audio:
             raise ConverterError('Source file has no audio or video streams')
 
-        preoptlist = []
+        preoptlist = None
         if info.video and 'video' in options:
             options = options.copy()
             v = options['video'] = options['video'].copy()
             v['src_width'] = info.video.video_width
             v['src_height'] = info.video.video_height
             preoptlist = options['video'].get('ffmpeg_custom_launch_opts', '').split(' ')
+            # Remove empty arguments (make crashes)
             preoptlist = [arg for arg in preoptlist if arg]
 
         if info.format.duration < 0.01:
@@ -195,18 +196,18 @@ class Converter(object):
 
         if twopass:
             optlist1 = self.parse_options(options, 1)
-            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist1,
-                                                timeout=timeout):
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist1,
+                                                timeout=timeout, preopts=preoptlist):
                 yield float(timecode) / info.format.duration
 
             optlist2 = self.parse_options(options, 2)
-            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist2,
-                                                timeout=timeout):
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist2,
+                                                timeout=timeout, preopts=preoptlist):
                 yield 0.5 + float(timecode) / info.format.duration
         else:
             optlist = self.parse_options(options, twopass)
-            for timecode in self.ffmpeg.convert(preoptlist, infile, outfile, optlist,
-                                                timeout=timeout):
+            for timecode in self.ffmpeg.convert(infile, outfile, optlist,
+                                                timeout=timeout, preopts=preoptlist):
                 yield float(timecode) / info.format.duration
 
     def segment(self, infile, working_directory, output_file, output_directory, timeout=10):
@@ -232,7 +233,7 @@ class Converter(object):
             "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
         ]
         outfile = "%s/media%%05d.ts" % output_directory
-        for timecode in self.ffmpeg.convert([], infile, outfile, optlist, timeout=timeout):
+        for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
             yield int((100.0 * timecode) / info.format.duration)
         os.chdir(current_directory)
 
