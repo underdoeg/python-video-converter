@@ -48,9 +48,11 @@ class VideoCodec(BaseCodec):
         'mode': str,
         'src_width': int,
         'src_height': int,
+        'display_aspect_ratio': float,
+        'sample_aspect_ratio': float,
     }
 
-    def _aspect_corrections(self, sw, sh, w, h, dar, mode):
+    def _aspect_corrections(self, sw, sh, w, h, sar, mode):
         # If we don't have source info, we don't try to calculate
         # aspect corrections
         if not sw or not sh:
@@ -58,9 +60,9 @@ class VideoCodec(BaseCodec):
 
         # Original aspect ratio
         aspect = (1.0 * sw) / (1.0 * sh)
-        if dar:
+        if sar:
             # Display aspect ratio must be taken account
-            aspect /= dar
+            aspect /= sar
 
         # If we have only one dimension, we can easily calculate
         # the other to match the source aspect ratio
@@ -159,7 +161,7 @@ class VideoCodec(BaseCodec):
                 sw = None
                 sh = None
 
-        dar = safe.get('display_aspect_ratio')
+        sar = safe.get('sample_aspect_ratio')
 
         mode = 'stretch'
         if 'mode' in safe:
@@ -167,7 +169,7 @@ class VideoCodec(BaseCodec):
                 mode = safe['mode']
 
         ow, oh = w, h  # FIXED
-        w, h, filters = self._aspect_corrections(sw, sh, w, h, dar, mode)
+        w, h, filters = self._aspect_corrections(sw, sh, w, h, sar, mode)
 
         safe['width'] = w
         safe['height'] = h
