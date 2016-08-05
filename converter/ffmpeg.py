@@ -123,6 +123,8 @@ class MediaStreamInfo(object):
         self.video_height = None
         self.video_fps = None
         self.video_pixel_format = None
+        self.video_sample_aspect_ratio = None
+        self.video_display_aspect_ratio = None
         self.audio_channels = None
         self.audio_samplerate = None
         self.attached_pic = None
@@ -200,6 +202,16 @@ class MediaStreamInfo(object):
                         self.video_fps = float(n) / float(d)
                 elif '.' in val:
                     self.video_fps = self.parse_float(val)
+            elif key == 'sample_aspect_ratio':
+                n, d = val.split(':')
+                n = self.parse_float(n)
+                d = self.parse_float(d)
+                self.video_sample_aspect_ratio = float(n) / float(d)
+            elif key == 'display_aspect_ratio':
+                n, d = val.split(':')
+                n = self.parse_float(n)
+                d = self.parse_float(d)
+                self.video_display_aspect_ratio = float(n) / float(d)
 
         if self.type == 'subtitle':
             if key == 'disposition:forced':
@@ -417,7 +429,7 @@ class FFMpeg(object):
         >>> conv = FFMpeg().convert('test.ogg', '/tmp/output.mp3',
         ...    ['-acodec libmp3lame', '-vn'])
         >>> for timecode in conv:
-        ...    pass # can be used to inform the user about conversion progress
+        ...    pass  # can be used to inform the user about conversion progress
 
         """
         if not os.path.exists(infile):
