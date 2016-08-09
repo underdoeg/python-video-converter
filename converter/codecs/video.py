@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 from . import BaseCodec
+
+logger = logging.getLogger("converter.codecs.video")
 
 
 class VideoCodec(BaseCodec):
-
     """
-    Base video codec class handles general video options. Possible
-    parameters are:
+    Base video codec class handles general video options.
+
+    Possible parameters are:
       * codec (string) - video codec name
       * bitrate (string) - stream bitrate
       * max_bitrate (string) - maximum stream bitrate
@@ -55,6 +58,7 @@ class VideoCodec(BaseCodec):
     def _aspect_corrections(self, sw, sh, w, h, sar, mode):
         # If we don't have source info, we don't try to calculate
         # aspect corrections
+        logger.info("_aspect_corrections: %s, %s, %s, %s, %s, %s", sw, sh, w, h, sar, mode)
         if not sw or not sh:
             return w, h, None
 
@@ -115,8 +119,10 @@ class VideoCodec(BaseCodec):
 
     def parse_options(self, opt):
         super(VideoCodec, self).parse_options(opt)
+        logger.info("OPT: %s", opt)
 
         safe = self.safe_options(opt)
+        logger.info("SAFE: %s", safe)
 
         if 'fps' in safe:
             f = safe['fps']
@@ -207,10 +213,7 @@ class VideoCodec(BaseCodec):
 
 
 class VideoNullCodec(VideoCodec):
-
-    """
-    Null video codec (no video).
-    """
+    """Null video codec (no video)."""
 
     codec_name = None
 
@@ -219,10 +222,8 @@ class VideoNullCodec(VideoCodec):
 
 
 class VideoCopyCodec(VideoCodec):
+    """Copy video stream directly from the source."""
 
-    """
-    Copy video stream directly from the source.
-    """
     codec_name = 'copy'
 
     def parse_options(self, opt):
@@ -230,11 +231,12 @@ class VideoCopyCodec(VideoCodec):
 
 
 class TheoraCodec(VideoCodec):
-
     """
     Theora video codec.
+
     @see http://ffmpeg.org/trac/ffmpeg/wiki/TheoraVorbisEncodingGuide
     """
+
     codec_name = 'theora'
     ffmpeg_codec_name = 'libtheora'
     encoder_options = VideoCodec.encoder_options.copy()
@@ -258,11 +260,12 @@ class TheoraCodec(VideoCodec):
 
 
 class H264Codec(VideoCodec):
-
     """
     H.264/AVC video codec.
+
     @see http://ffmpeg.org/trac/ffmpeg/wiki/x264EncodingGuide
     """
+
     codec_name = 'h264'
     ffmpeg_codec_name = 'libx264'
     encoder_options = VideoCodec.encoder_options.copy()
@@ -295,12 +298,14 @@ class H264Codec(VideoCodec):
             optlist.extend(['-tune', safe['tune']])
         return optlist
 
-class VaapiH264Codec(VideoCodec):
 
+class VaapiH264Codec(VideoCodec):
     """
     H.264/AVC video codec.
+
     @see https://wiki.libav.org/Hardware/vaapi#H.264
     """
+
     codec_name = 'h264_vaapi'
     ffmpeg_codec_name = 'h264_vaapi'
     encoder_options = VideoCodec.encoder_options.copy()
@@ -331,11 +336,10 @@ class VaapiH264Codec(VideoCodec):
             optlist.extend(['-profile', safe['profile']])
         return optlist
 
-class DivxCodec(VideoCodec):
 
-    """
-    DivX video codec.
-    """
+class DivxCodec(VideoCodec):
+    """DivX video codec."""
+
     codec_name = 'divx'
     ffmpeg_codec_name = 'mpeg4'
     encoder_options = VideoCodec.encoder_options.copy()
@@ -360,10 +364,8 @@ class DivxCodec(VideoCodec):
 
 
 class Vp8Codec(VideoCodec):
+    """Google VP8 video codec."""
 
-    """
-    Google VP8 video codec.
-    """
     codec_name = 'vp8'
     ffmpeg_codec_name = 'libvpx'
     encoder_options = VideoCodec.encoder_options.copy()
@@ -397,28 +399,22 @@ class Vp8Codec(VideoCodec):
 
 
 class H263Codec(VideoCodec):
+    """H.263 video codec."""
 
-    """
-    H.263 video codec.
-    """
     codec_name = 'h263'
     ffmpeg_codec_name = 'h263'
 
 
 class FlvCodec(VideoCodec):
+    """Flash Video codec."""
 
-    """
-    Flash Video codec.
-    """
     codec_name = 'flv'
     ffmpeg_codec_name = 'flv'
 
 
 class MpegCodec(VideoCodec):
+    """Base MPEG video codec."""
 
-    """
-    Base MPEG video codec.
-    """
     encoder_options = VideoCodec.encoder_options.copy()
     encoder_options.update({
         'quality': int,  # quality, range:1(lossless)-31(worst)
@@ -459,28 +455,22 @@ class MpegCodec(VideoCodec):
 
 
 class Mpeg1Codec(MpegCodec):
+    """MPEG-1 video codec."""
 
-    """
-    MPEG-1 video codec.
-    """
     codec_name = 'mpeg1'
     ffmpeg_codec_name = 'mpeg1video'
 
 
 class Mpeg2Codec(MpegCodec):
+    """MPEG-2 video codec."""
 
-    """
-    MPEG-2 video codec.
-    """
     codec_name = 'mpeg2'
     ffmpeg_codec_name = 'mpeg2video'
 
 
 class WmvCodec(VideoCodec):
+    """WMV video codec."""
 
-    """
-    WMV video codec.
-    """
     codec_name = 'wmv'
     ffmpeg_codec_name = 'msmpeg4'
     encoder_options = VideoCodec.encoder_options.copy()
