@@ -65,7 +65,7 @@ class VideoCodec(BaseCodec):
         # Original aspect ratio
         aspect = (1.0 * sw) / (1.0 * sh)
         if sar:
-            # Display aspect ratio must be taken account
+            # Sample aspect ratio must be taken account
             aspect /= sar
 
         # If we have only one dimension, we can easily calculate
@@ -144,6 +144,8 @@ class VideoCodec(BaseCodec):
             if mb < 16 or mb > 15000:
                 del safe['max_bitrate']
 
+        sar = safe.get('sample_aspect_ratio')
+
         w = None
         h = None
 
@@ -156,6 +158,8 @@ class VideoCodec(BaseCodec):
             h = safe['height']
             if h < 16 or h > 3000:
                 h = None
+            if h and sar:
+                h = int(round(h / sar))
 
         sw = None
         sh = None
@@ -166,8 +170,6 @@ class VideoCodec(BaseCodec):
             if not sw or not sh:
                 sw = None
                 sh = None
-
-        sar = safe.get('sample_aspect_ratio')
 
         mode = 'stretch'
         if 'mode' in safe:
