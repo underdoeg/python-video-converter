@@ -7,7 +7,7 @@ from converter.codecs import codec_lists
 from converter.formats import format_list
 from converter.ffmpeg import FFMpeg
 
-logger = logging.getLogger("converter")
+logger = logging.getLogger(__name__)
 
 
 class ConverterError(Exception):
@@ -192,7 +192,7 @@ class Converter(object):
             v['src_height'] = info.video.video_height
             v['display_aspect_ratio'] = info.video.video_display_aspect_ratio
             v['sample_aspect_ratio'] = info.video.video_sample_aspect_ratio
-            logger.info("OPTIONS: %s", options)
+            v['rotate'] = info.video.metadata.get('rotate')
             preoptlist = options['video'].get('ffmpeg_custom_launch_opts', '').split(' ')
             # Remove empty arguments (make crashes)
             preoptlist = [arg for arg in preoptlist if arg]

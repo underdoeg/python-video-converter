@@ -4,7 +4,7 @@
 import logging
 from . import BaseCodec
 
-logger = logging.getLogger("converter.codecs.video")
+logger = logging.getLogger(__name__)
 
 
 class VideoCodec(BaseCodec):
@@ -55,10 +55,9 @@ class VideoCodec(BaseCodec):
         'sample_aspect_ratio': float,
     }
 
-    def _aspect_corrections(self, sw, sh, w, h, sar, mode):
+    def _aspect_corrections(self, sw, sh, w, h, sar, rotate, mode):
         # If we don't have source info, we don't try to calculate
         # aspect corrections
-        logger.info("_aspect_corrections: %s, %s, %s, %s, %s, %s", sw, sh, w, h, sar, mode)
         if not sw or not sh:
             return w, h, None
 
@@ -67,6 +66,8 @@ class VideoCodec(BaseCodec):
         if sar:
             # Sample aspect ratio must be taken account
             aspect /= sar
+        if rotate in ('90', '270'):
+            aspect = 1 / aspect
 
         # If we have only one dimension, we can easily calculate
         # the other to match the source aspect ratio
@@ -119,10 +120,8 @@ class VideoCodec(BaseCodec):
 
     def parse_options(self, opt):
         super(VideoCodec, self).parse_options(opt)
-        logger.info("OPT: %s", opt)
 
         safe = self.safe_options(opt)
-        logger.info("SAFE: %s", safe)
 
         if 'fps' in safe:
             f = safe['fps']
@@ -145,6 +144,7 @@ class VideoCodec(BaseCodec):
                 del safe['max_bitrate']
 
         sar = safe.get('sample_aspect_ratio')
+        rotate = safe.get('rotate')
 
         w = None
         h = None
@@ -165,6 +165,10 @@ class VideoCodec(BaseCodec):
                     h = int(round(h / sar))
                 h -= h % 2
 
+        if rotate in ('90', '270'):
+            # FFMpeg does the rotation automatically from version 2.7, but still we have to swap width and height
+            w, h = h, w
+
         sw = None
         sh = None
 
@@ -181,7 +185,7 @@ class VideoCodec(BaseCodec):
                 mode = safe['mode']
 
         ow, oh = w, h  # FIXED
-        w, h, filters = self._aspect_corrections(sw, sh, w, h, sar, mode)
+        w, h, filters = self._aspect_corrections(sw, sh, w, h, sar, rotate, mode)
 
         safe['width'] = w
         safe['height'] = h
