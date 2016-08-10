@@ -53,6 +53,7 @@ class VideoCodec(BaseCodec):
         'src_height': int,
         'display_aspect_ratio': float,
         'sample_aspect_ratio': float,
+        'rotate': str,
     }
 
     def _aspect_corrections(self, sw, sh, w, h, sar, rotate, mode):
