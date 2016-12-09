@@ -13,6 +13,7 @@ class VideoCodec(BaseCodec):
 
     Possible parameters are:
       * codec (string) - video codec name
+      * pix_fmt (string) - pixel format
       * bitrate (string) - stream bitrate
       * max_bitrate (string) - maximum stream bitrate
       * fps (integer) - frames per second
@@ -42,6 +43,7 @@ class VideoCodec(BaseCodec):
     codec_type = "video"
     encoder_options = {
         'codec': str,
+        'pix_fmt': str,
         'bitrate': int,
         'max_bitrate': int,
         'fps': int,
@@ -55,6 +57,38 @@ class VideoCodec(BaseCodec):
         'sample_aspect_ratio': float,
         'rotate': str,
     }
+
+    formats_supported = [
+        "yuv420p", "yuyv422", "rgb24", "bgr24", "yuv422p", "yuv444p", "yuv410p",
+        "yuv411p", "gray", "monow", "monob", "pal8", "yuvj420p", "yuvj422p",
+        "yuvj444p", "xvmcmc", "xvmcidct", "uyvy422", "uyyvyy411", "bgr8",
+        "bgr4", "bgr4_byte", "rgb8", "rgb4", "rgb4_byte", "nv12", "nv21",
+        "argb", "rgba", "abgr", "bgra", "gray16be", "gray16le", "yuv440p",
+        "yuvj440p", "yuva420p", "vdpau_h264", "vdpau_mpeg1", "vdpau_mpeg2",
+        "vdpau_wmv3", "vdpau_vc1", "rgb48be", "rgb48le", "rgb565be", "rgb565le",
+        "rgb555be", "rgb555le", "bgr565be", "bgr565le", "bgr555be", "bgr555le",
+        "vaapi_moco", "vaapi_idct", "vaapi_vld", "yuv420p16le", "yuv420p16be",
+        "yuv422p16le2", "yuv422p16be2", "yuv444p16le", "yuv444p16be", "vdpau_mpeg4",
+        "dxva2_vld", "rgb444le", "rgb444be", "bgr444le", "bgr444be", "ya8", "bgr48be",
+        "bgr48le", "yuv420p9be", "yuv420p9le", "yuv420p10be", "yuv420p10le", "yuv422p10be",
+        "yuv422p10le", "yuv444p9be", "yuv444p9le", "yuv444p10be0", "yuv444p10le0",
+        "yuv422p9be", "yuv422p9le", "vda_vld", "gbrp", "gbrp9be", "gbrp9le", "gbrp10be0",
+        "gbrp10le0", "gbrp16be8", "gbrp16le8", "yuva420p9be", "yuva420p9le", "yuva422p9be",
+        "yuva422p9le", "yuva444p9be", "yuva444p9le", "yuva420p10be", "yuva420p10le",
+        "yuva422p10be", "yuva422p10le", "yuva444p10be", "yuva444p10le", "yuva420p16be",
+        "yuva420p16le", "yuva422p16be", "yuva422p16le", "yuva444p16be", "yuva444p16le",
+        "vdpau", "xyz12le6", "xyz12be6", "nv16", "nv20le", "nv20be", "yvyu422", "vda",
+        "ya16be", "ya16le", "qsv", "mmal", "d3d11va_vld", "rgba64be", "rgba64le",
+        "bgra64be", "bgra64le", "0rgb", "rgb0", "0bgr", "bgr0", "yuva444p", "yuva422p",
+        "yuv420p12be", "yuv420p12le", "yuv420p14be", "yuv420p14le", "yuv422p12be",
+        "yuv422p12le", "yuv422p14be", "yuv422p14le", "yuv444p12be6", "yuv444p12le6",
+        "yuv444p14be", "yuv444p14le", "gbrp12be6", "gbrp12le6", "gbrp14be2", "gbrp14le2",
+        "gbrap2", "gbrap16be", "gbrap16le", "yuvj411p", "bayer_bggr8", "bayer_rggb8",
+        "bayer_gbrg8", "bayer_grbg8", "bayer_bggr16le", "bayer_bggr16be", "bayer_rggb16le",
+        "bayer_rggb16be", "bayer_gbrg16le", "bayer_gbrg16be", "bayer_grbg16le",
+        "bayer_grbg16be", "yuv440p10le", "yuv440p10be", "yuv440p12le", "yuv440p12be",
+        "ayuv64le", "ayuv64be", "videotoolbox_vld",
+    ]
 
     def _aspect_corrections(self, sw, sh, w, h, sar, rotate, mode):
         # If we don't have source info, we don't try to calculate
@@ -144,6 +178,11 @@ class VideoCodec(BaseCodec):
             if mb < 16 or mb > 15000:
                 del safe['max_bitrate']
 
+        if 'pix_fmt' in safe:
+            pix_fmt = safe['pix_fmt']
+            if pix_fmt in self.formats_supported:
+                del safe['pix_fmt']
+
         sar = safe.get('sample_aspect_ratio')
         rotate = safe.get('rotate')
 
@@ -202,6 +241,7 @@ class VideoCodec(BaseCodec):
         filters = safe['aspect_filters']
 
         optlist = ['-vcodec', self.ffmpeg_codec_name]
+        optlist.extend(['-pix_fmt', str(safe['pix_fmt'] if 'pix_fmt' in safe else 'yuv420p')])
         if 'fps' in safe:
             optlist.extend(['-r', str(safe['fps'])])
         if 'keyframe_interval' in safe:
@@ -304,7 +344,7 @@ class H264Codec(VideoCodec):
         if 'quality' in safe:
             optlist.extend(['-crf', str(safe['quality'])])
         if 'profile' in safe:
-            optlist.extend(['-profile', safe['profile']])
+            optlist.extend(['-profile:v', safe['profile']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
         return optlist
@@ -344,7 +384,7 @@ class VaapiH264Codec(VideoCodec):
         if 'quality' in safe:
             optlist.extend(['-crf', str(safe['quality'])])
         if 'profile' in safe:
-            optlist.extend(['-profile', safe['profile']])
+            optlist.extend(['-profile:v', safe['profile']])
         return optlist
 
 

@@ -3,6 +3,7 @@
 from six import with_metaclass
 
 codec_lists = dict()
+formats_supported = list()
 
 
 class MetaBaseCodec(type):
@@ -13,6 +14,8 @@ class MetaBaseCodec(type):
             if mcl.base_class not in bases:
                 codec_list = codec_lists.setdefault(
                     sub_class.codec_type, list())
+                if hasattr(sub_class, 'formats_supported') and len(formats_supported) == 0:
+                    format_supported = formats_supported.insert(0, sub_class.formats_supported)
                 for base in bases:
                     if base in codec_list and not base.codec_name:
                         codec_list.remove(base)
