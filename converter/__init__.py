@@ -236,7 +236,7 @@ class Converter(object):
         os.chdir(working_directory)
         optlist = [
             "-flags", "-global_header", "-f", "segment", "-segment_time", "1", "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
-            "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
+            "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf:v", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy", "-bsf:a", "aac_adtstoasc"
         ]
         outfile = "%s/media%%05d.ts" % output_directory
         for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
