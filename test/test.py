@@ -353,7 +353,7 @@ class TestFFMpeg(unittest.TestCase):
             ['-vcodec', 'msmpeg4', '-pix_fmt', 'yuv420p'], codecs.WmvCodec().parse_options({'codec': 'wmv'}))
 
     def test_converter(self):
-        c = Converter()
+        c = Converter(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
 
         self.assertRaisesSpecific(ConverterError, c.parse_options, None)
         self.assertRaisesSpecific(ConverterError, c.parse_options, {})
@@ -409,7 +409,7 @@ class TestFFMpeg(unittest.TestCase):
         self.assertTrue(verify_progress(conv))
 
     def test_converter_2pass(self):
-        c = Converter()
+        c = Converter(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
         self.video_file_path = 'xx.ogg'
         options = {
             'format': 'ogg',
@@ -432,7 +432,7 @@ class TestFFMpeg(unittest.TestCase):
         self._assert_converted_video_file()
 
     def test_converter_vp8_codec(self):
-        c = Converter()
+        c = Converter(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
         conv = c.convert('test1.ogg', self.video_file_path, {
             'format': 'webm',
             'video':
@@ -447,7 +447,7 @@ class TestFFMpeg(unittest.TestCase):
         self.assertTrue(verify_progress(conv))
 
     def test_probe_audio_poster(self):
-        c = Converter()
+        c = Converter(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
 
         info = c.probe('test.mp3', posters_as_video=True)
         self.assertNotEqual(None, info.video)
