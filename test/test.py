@@ -86,7 +86,7 @@ class TestFFMpeg(unittest.TestCase):
         self.assertRaisesSpecific(
             ffmpeg.FFMpegError, ffmpeg.FFMpeg, ffmpeg_path='/foo', ffprobe_path='/bar')
 
-        f = ffmpeg.FFMpeg()
+        f = ffmpeg.FFMpeg(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
 
         self.assertEqual(None, f.probe('nonexistent'))
         self.assertEqual(None, f.probe('/dev/null'))
@@ -120,7 +120,7 @@ class TestFFMpeg(unittest.TestCase):
                                      'MediaStreamInfo(type=audio, codec=vorbis, channels=2, rate=48000, bitrate=80000, ENCODER=ffmpeg2theora 0.19)])')
 
     def test_ffmpeg_convert(self):
-        f = ffmpeg.FFMpeg()
+        f = ffmpeg.FFMpeg(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
 
         def consume(fn, *args, **kwargs):
             return list(fn(*args, **kwargs))
@@ -149,7 +149,7 @@ class TestFFMpeg(unittest.TestCase):
         """
             Asserts converted test1.ogg (in path self.video_file_path) is converted correctly
         """
-        f = ffmpeg.FFMpeg()
+        f = ffmpeg.FFMpeg(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
         info = f.probe(self.video_file_path)
         self.assertEqual('ogg', info.format.format)
         self.assertAlmostEqual(33.00, info.format.duration, places=0)
@@ -168,7 +168,7 @@ class TestFFMpeg(unittest.TestCase):
 
     def test_ffmpeg_termination(self):
         # test when ffmpeg is killed
-        f = ffmpeg.FFMpeg()
+        f = ffmpeg.FFMpeg(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
         convert_options = [
             '-acodec', 'libvorbis', '-ab', '16k', '-ac', '1', '-ar', '11025',
             '-vcodec', 'libtheora', '-r', '15', '-s', '360x200', '-b', '128k']
@@ -182,7 +182,7 @@ class TestFFMpeg(unittest.TestCase):
         self.assertRaisesSpecific(ffmpeg.FFMpegConvertError, list, conv)
 
     def test_ffmpeg_thumbnail(self):
-        f = ffmpeg.FFMpeg()
+        f = ffmpeg.FFMpeg(ffmpeg_path="ffmpeg-3.2.2", ffprobe_path="ffprobe-3.2.2")
         thumb = self.shot_file_path
         thumb2 = self.shot2_file_path
 
