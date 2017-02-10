@@ -239,13 +239,18 @@ class Converter(object):
             "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-vcodec", "copy", "-acodec", "copy"
         ]
         try:
-            codec = info.streams[0].codec
+            if "video" in info.streams[0].type:
+                codec = info.streams[0].codec
+            else:
+                codec = info.streams[1].codec
         except Exception as e:
             print("could not determinate encoder: %s", e)
             codec = ""
+        print("video codec is %s", codec)
         if "h264" in codec:
-            optlist.insert(-4, "-bsf")
+            optlist.insert(-4, "-vbsf")
             optlist.insert(-4, "h264_mp4toannexb")
+
         outfile = "%s/media%%05d.ts" % output_directory
         for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
             yield int((100.0 * timecode) / info.format.duration)
