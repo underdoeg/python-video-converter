@@ -246,7 +246,6 @@ class Converter(object):
         except Exception as e:
             print("could not determinate encoder: %s", e)
             codec = ""
-        print("video codec is %s", codec)
         if "h264" in codec:
             optlist.insert(-4, "-vbsf")
             optlist.insert(-4, "h264_mp4toannexb")
