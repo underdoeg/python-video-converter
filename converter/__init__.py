@@ -238,6 +238,14 @@ class Converter(object):
             "-flags", "-global_header", "-f", "segment", "-segment_time", "1", "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
             "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-bsf:v", "h264_mp4toannexb", "-vcodec", "copy", "-acodec", "copy"
         ]
+        try:
+            codec = info.streams[0].codec
+        except Exception as e:
+            print("could not determinate encoder: %s", e)
+            codec = ""
+        if "h264" in codec:
+            optlist.insert(-4, "-bfs")
+            optlist.insert(-4, "h264_mp4toannexb")
         outfile = "%s/media%%05d.ts" % output_directory
         for timecode in self.ffmpeg.convert(infile, outfile, optlist, timeout=timeout):
             yield int((100.0 * timecode) / info.format.duration)
