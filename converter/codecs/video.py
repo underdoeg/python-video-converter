@@ -327,6 +327,7 @@ class H264Codec(VideoCodec):
         # default:23, recommended: 18-28
         # http://mewiki.project357.com/wiki/X264_Settings#profile
         'profile': str,  # default: not-set, for valid values see above link
+        'level': str,  # default: not-set, for valid values see above link
         'tune': str,  # default: not-set, for valid values see above link
     })
 
@@ -345,6 +346,8 @@ class H264Codec(VideoCodec):
             optlist.extend(['-crf', str(safe['quality'])])
         if 'profile' in safe:
             optlist.extend(['-profile:v', safe['profile']])
+        if 'level' in safe:
+            optlist.extend(['-level', safe['level']])
         if 'tune' in safe:
             optlist.extend(['-tune', safe['tune']])
         return optlist
@@ -366,6 +369,7 @@ class VaapiH264Codec(VideoCodec):
         'quality': int,  # constant rate factor, range:0(lossless)-51(worst)
         # default:23, recommended: 18-28
         'profile': str,  # default: not-set, for valid values see above link
+        'level': str,  # default: not-set, for valid values see above link
     })
 
     def _codec_specific_parse_options(self, safe):
@@ -385,6 +389,8 @@ class VaapiH264Codec(VideoCodec):
             optlist.extend(['-crf', str(safe['quality'])])
         if 'profile' in safe:
             optlist.extend(['-profile:v', safe['profile']])
+        if 'level' in safe:
+            optlist.extend(['-level', safe['level']])
         return optlist
 
 
