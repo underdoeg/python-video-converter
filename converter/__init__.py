@@ -235,7 +235,7 @@ class Converter(object):
                 raise e
         current_directory = os.getcwd()
         os.chdir(working_directory)
-        segment_time = max(1, math.ceil(options['audio'].start_time)
+        segment_time = max(1, math.ceil(options['audio'].start_time))
         if segment_time > 1:
             logger.warning("Warning : HLS fragments size will be upper than 1 seconds probably that audio channel start at %s seconds." % (segment_time))
         optlist = [
