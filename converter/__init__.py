@@ -2,6 +2,7 @@
 
 import errno
 import logging
+import math
 import os
 from converter.codecs import codec_lists
 from converter.formats import format_list
@@ -216,7 +217,7 @@ class Converter(object):
                                                 timeout=timeout, preopts=preoptlist):
                 yield float(timecode) / info.format.duration
 
-    def segment(self, infile, working_directory, output_file, output_directory, timeout=10):
+    def segment(self, infile, working_directory, output_file, output_directory, options, timeout=10):
         if not os.path.exists(infile):
             raise ConverterError("Source file doesn't exist: " + infile)
 
@@ -234,8 +235,14 @@ class Converter(object):
                 raise e
         current_directory = os.getcwd()
         os.chdir(working_directory)
+        if options.get("audio"):
+            segment_time = max(1, math.ceil(options['audio'].get("start_time", 1)))
+        else:
+            segment_time = 1
+        if segment_time > 1:
+            logger.warning("Warning : HLS fragments size will be upper than 1 seconds probably that audio channel start at %s seconds." % (segment_time))
         optlist = [
-            "-flags", "-global_header", "-f", "segment", "-segment_time", "1", "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
+            "-flags", "-global_header", "-f", "segment", "-segment_time", "%s" % segment_time, "-segment_list", output_file, "-segment_list_type", "m3u8", "-segment_format", "mpegts",
             "-segment_list_entry_prefix", "%s/" % output_directory, "-map", "0", "-map", "-0:d", "-vcodec", "copy", "-acodec", "copy"
         ]
         try:

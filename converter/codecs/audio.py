@@ -56,6 +56,8 @@ class AudioCodec(BaseCodec):
             optlist.extend(['-ar', str(safe['samplerate'])])
 
         optlist.extend(self._codec_specific_produce_ffmpeg_list(safe))
+        if 'filter' in opt:
+            optlist.extend(['-filter:a', str(opt['filter'])])
         return optlist
 
 

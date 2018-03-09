@@ -127,6 +127,7 @@ class MediaStreamInfo(object):
         self.video_display_aspect_ratio = None
         self.audio_channels = None
         self.audio_samplerate = None
+        self.start_time = None
         self.attached_pic = None
         self.sub_forced = None
         self.sub_default = None
@@ -173,6 +174,8 @@ class MediaStreamInfo(object):
             self.audio_channels = self.parse_int(val)
         elif key == 'sample_rate':
             self.audio_samplerate = self.parse_float(val)
+        elif key == 'start_time':
+            self.start_time = self.parse_float(val)
         elif key == 'DISPOSITION:attached_pic':
             self.attached_pic = self.parse_int(val)
 
