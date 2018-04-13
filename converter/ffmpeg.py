@@ -66,6 +66,7 @@ class MediaFormatInfo(object):
         self.bitrate = None
         self.duration = None
         self.filesize = None
+        self.metadata = {}
 
     def parse_ffprobe(self, key, val):
         """
@@ -81,12 +82,25 @@ class MediaFormatInfo(object):
             self.duration = MediaStreamInfo.parse_float(val, None)
         elif key == 'size':
             self.size = MediaStreamInfo.parse_float(val, None)
+        if key.startswith('TAG:'):
+            key = key.split('TAG:')[1]
+            value = val
+            self.metadata[key] = value
 
     def __repr__(self):
-        if self.duration is None:
-            return 'MediaFormatInfo(format=%s)' % self.format
-        return 'MediaFormatInfo(format=%s, duration=%.2f)' % (self.format,
-                                                              self.duration)
+        d = ''
+        metadata_str = ['%s=%s' % (key, value) for key, value
+                        in self.metadata.items()]
+        metadata_str = ', '.join(metadata_str)
+
+        if self.duration is not None:
+            d += 'duration=%s, ' % self.duration
+        if self.format is not None:
+            d += 'format=%s, ' % self.format
+        if metadata_str is not None:
+            d += "%s" % metadata_str
+        value = 'MediaFormatInfo(%s)' % d
+        return value
 
 
 class MediaStreamInfo(object):
@@ -231,7 +245,6 @@ class MediaStreamInfo(object):
         metadata_str = ['%s=%s' % (key, value) for key, value
                         in self.metadata.items()]
         metadata_str = ', '.join(metadata_str)
-
         if self.type == 'audio':
             d = 'type=%s, codec=%s, channels=%d, rate=%.0f' % (self.type,
                 self.codec, self.audio_channels, self.audio_samplerate)
