@@ -459,7 +459,7 @@ class FFMpeg(object):
         if preopts:
             cmds.extend(preopts)
         cmds.extend(['-i', infile])
-        cmds.extend(['-max_muxing_queue_size', '300'])
+        cmds.extend(['-max_muxing_queue_size', '500'])
         cmds.extend(opts)
         cmds.extend(['-y', outfile])
 
