@@ -197,7 +197,7 @@ class Converter(object):
             preoptlist = options['video'].get('ffmpeg_custom_launch_opts', '').split(' ')
             # Remove empty arguments (make crashes)
             preoptlist = [arg for arg in preoptlist if arg]
-        if not info.format.duration or info.format.duration < 0.01:
+        if not info.format or not info.format.duration or not isinstance(info.format.duration, (float, int)) or info.format.duration < 0.01:
             raise ConverterError('Zero-length media')
 
         if twopass:
