@@ -220,19 +220,27 @@ class MediaStreamInfo(object):
                 elif '.' in val:
                     self.video_fps = self.parse_float(val)
             elif key == 'sample_aspect_ratio':
-                n, d = val.split(':')
-                n = self.parse_float(n)
-                d = self.parse_float(d)
-                self.video_sample_aspect_ratio = float(n) / float(d)
-            elif key == 'display_aspect_ratio':
-                n, d = val.split(':')
-                n = self.parse_float(n)
-                d = self.parse_float(d)
-                if d > 0.0:
-                    self.video_display_aspect_ratio = float(n) / float(d)
+                if val == "N/A":
+                    self.video_sample_aspect_ration = 0
+                    logger.warning('Could not determinate sample aspect ratio, n')
                 else:
-                    logger.warning('Could not determinate video ratio, n : %s d : %s' % (n, d))
-                    self.video_display_aspect_ratio = 16.0 / 9.0
+                    n, d = val.split(':')
+                    n = self.parse_float(n)
+                    d = self.parse_float(d)
+                    self.video_sample_aspect_ratio = float(n) / float(d)
+            elif key == 'display_aspect_ratio':
+                if val == "N/A":
+                    self.video_display_aspect_ratio = 0
+                    logger.warning('Could not determinate display aspect ratio, n')
+                else:
+                    n, d = val.split(':')
+                    n = self.parse_float(n)
+                    d = self.parse_float(d)
+                    if d > 0.0:
+                        self.video_display_aspect_ratio = float(n) / float(d)
+                    else:
+                        logger.warning('Could not determinate video ratio, n : %s d : %s' % (n, d))
+                        self.video_display_aspect_ratio = 16.0 / 9.0
 
         if self.type == 'subtitle':
             if key == 'disposition:forced':
