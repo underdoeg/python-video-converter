@@ -455,6 +455,34 @@ class Vp8Codec(VideoCodec):
         return optlist
 
 
+class Vp9Codec(VideoCodec):
+    """Google VP9 video codec."""
+
+    codec_name = 'vp9'
+    ffmpeg_codec_name = 'libvpx-vp9'
+    encoder_options = VideoCodec.encoder_options.copy()
+    encoder_options.update({
+        'deadline': str,  # realtime, good, or best
+        'cpu-used': int,  # threads number
+        # default: 1, recommended: number of real cores - 1
+    })
+
+    def _codec_specific_parse_options(self, safe):
+        if 'cpu-used' in safe:
+            t = safe['cpu-used']
+            if t < 0:
+                del safe['cpu-used']
+        return safe
+
+    def _codec_specific_produce_ffmpeg_list(self, safe):
+        optlist = []
+        if 'deadline' in safe:
+            optlist.extend(['-deadline', str(safe['deadline'])])
+        if 'cpu-used' in safe:
+            optlist.extend(['-cpu-used', str(safe['cpu-used'])])
+        return optlist
+
+
 class H263Codec(VideoCodec):
     """H.263 video codec."""
 
